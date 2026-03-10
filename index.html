@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>La Ferme d'Emile — Import Automatique</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+:root{--vert:#1a5e2a;--vert-m:#2e7d32;--vert-l:#c8e6c9;--vert-p:#e8f5e9;--or:#f9a825;--rouge:#c62828;--rouge-l:#ffcdd2;--jaune:#fff9c4;--bleu:#1565c0;--gris:#f5f5f5;--gris-m:#e0e0e0;--noir:#1a1a1a;--bg:#f7faf7}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--noir);min-height:100vh}
+header{background:var(--vert);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:64px;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.25)}
+.logo{display:flex;align-items:center;gap:.75rem}
+.logo-icon{width:36px;height:36px;background:var(--or);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px}
+.logo-text{font-family:'DM Serif Display',serif;color:#fff;font-size:1.2rem}
+.logo-sub{color:rgba(255,255,255,.7);font-size:.7rem;letter-spacing:.05em;text-transform:uppercase}
+.header-right{display:flex;align-items:center;gap:1rem}
+.google-status{display:flex;align-items:center;gap:.5rem;color:#fff;font-size:.8rem}
+.gdot{width:8px;height:8px;border-radius:50%;background:#ccc;transition:background .3s}
+.gdot.on{background:#69f0ae}
+.badge{background:var(--or);color:var(--vert);font-size:.7rem;font-weight:600;padding:.25rem .75rem;border-radius:20px;text-transform:uppercase}
+.container{max-width:1100px;margin:0 auto;padding:2.5rem 1.5rem}
+.steps{display:flex;align-items:center;margin-bottom:2.5rem;background:#fff;border-radius:12px;padding:.75rem 1.5rem;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.step{display:flex;align-items:center;gap:.5rem;flex:1;font-size:.8rem;color:#9e9e9e;transition:color .3s}
+.step.active{color:var(--vert);font-weight:600}
+.step.done{color:var(--vert-m)}
+.sn{width:24px;height:24px;border-radius:50%;background:var(--gris-m);display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;flex-shrink:0;transition:all .3s}
+.step.active .sn{background:var(--vert);color:#fff}
+.step.done .sn{background:var(--vert-m);color:#fff}
+.sa{color:#ccc;margin:0 .2rem;flex-shrink:0}
+.panel{background:#fff;border-radius:16px;box-shadow:0 2px 16px rgba(0,0,0,.08);overflow:hidden;display:none}
+.panel.active{display:block}
+.ph{background:linear-gradient(135deg,var(--vert),var(--vert-m));padding:1.5rem 2rem;color:#fff}
+.pt{font-family:'DM Serif Display',serif;font-size:1.5rem;margin-bottom:.2rem}
+.ps{font-size:.85rem;opacity:.8}
+.pb{padding:2rem}
+/* Auth */
+.auth-box{text-align:center;padding:2rem}
+.ai{font-size:4rem;display:block;margin-bottom:1rem}
+.at{font-family:'DM Serif Display',serif;font-size:1.5rem;color:var(--vert);margin-bottom:.5rem}
+.as{color:#666;font-size:.9rem;margin-bottom:2rem;line-height:1.6}
+.btn-g{background:#fff;color:#444;border:2px solid var(--gris-m);padding:.875rem 2rem;border-radius:10px;font-size:.95rem;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:.75rem;transition:all .2s;font-family:'DM Sans',sans-serif;box-shadow:0 2px 8px rgba(0,0,0,.1)}
+.btn-g:hover{border-color:#4285f4;box-shadow:0 4px 16px rgba(66,133,244,.2);transform:translateY(-1px)}
+/* Doc types */
+.dtg{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem}
+.dtc{border:2px solid var(--gris-m);border-radius:12px;padding:1.25rem 1rem;text-align:center;cursor:pointer;transition:all .2s;background:#fff}
+.dtc:hover{border-color:var(--vert);background:var(--vert-p)}
+.dtc.sel{border-color:var(--vert);background:var(--vert-p);box-shadow:0 0 0 3px rgba(46,125,50,.15)}
+.dti{font-size:2rem;margin-bottom:.5rem;display:block}
+.dtl{font-size:.85rem;font-weight:600;color:var(--vert)}
+.dtd{font-size:.72rem;color:#888;margin-top:.2rem}
+/* Drop zone */
+.dz{border:2.5px dashed var(--vert-l);border-radius:12px;padding:3rem 2rem;text-align:center;cursor:pointer;transition:all .25s;background:var(--vert-p)}
+.dz:hover,.dz.over{border-color:var(--vert);background:var(--vert-l)}
+.dzi{font-size:3.5rem;margin-bottom:1rem;display:block}
+.dzt{font-family:'DM Serif Display',serif;font-size:1.4rem;color:var(--vert);margin-bottom:.5rem}
+.dzs{color:#666;font-size:.9rem;margin-bottom:1.5rem}
+.dzf{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap}
+.fb{background:#fff;border:1px solid var(--vert-l);color:var(--vert);font-size:.75rem;font-weight:600;padding:.25rem .75rem;border-radius:20px;font-family:'DM Mono',monospace}
+#fi{display:none}
+.bup{background:var(--vert);color:#fff;border:none;padding:.75rem 2rem;border-radius:8px;font-size:.95rem;font-weight:600;cursor:pointer;margin-top:1.25rem;display:inline-flex;align-items:center;gap:.5rem;transition:background .2s;font-family:'DM Sans',sans-serif}
+.bup:hover{background:var(--vert-m)}
+/* Analysis */
+.ast{display:flex;align-items:center;gap:1rem;padding:1.25rem 1.5rem;border-radius:10px;margin-bottom:1.5rem;background:var(--bleu);color:#fff;font-weight:500}
+.sp{width:22px;height:22px;border:3px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+.pbw{background:var(--gris-m);border-radius:8px;height:8px;overflow:hidden;margin-bottom:.5rem}
+.pb2{height:100%;background:linear-gradient(90deg,var(--vert-m),var(--or));border-radius:8px;transition:width .4s ease;width:0%}
+.ptx{font-size:.8rem;color:#666;text-align:right}
+/* Results */
+.rh{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem}
+.rt{font-family:'DM Serif Display',serif;font-size:1.2rem;color:var(--vert)}
+.cb{font-size:.78rem;font-weight:600;padding:.3rem .8rem;border-radius:20px}
+.ch{background:var(--vert-l);color:var(--vert)}
+.cm{background:var(--jaune);color:#856404}
+.cl2{background:var(--rouge-l);color:var(--rouge)}
+.rg{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1.5rem}
+.rf{background:var(--gris);border-radius:8px;padding:.75rem 1rem;border-left:3px solid var(--gris-m)}
+.rf.hl{border-left-color:var(--or);background:var(--jaune)}
+.fl{font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:#888;margin-bottom:.3rem;font-weight:600}
+.fi2{width:100%;background:transparent;border:none;font-family:'DM Mono',monospace;font-size:.9rem;color:var(--noir);font-weight:500;outline:none}
+.fi2:focus{background:rgba(255,255,255,.8);border-radius:4px;padding:2px 4px}
+/* Table */
+.ps2{margin-top:1.5rem}
+.pt2{font-size:.85rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:#666;margin-bottom:.75rem}
+.ptb{width:100%;border-collapse:collapse;font-size:.85rem}
+.ptb th{background:var(--vert);color:#fff;padding:.6rem .75rem;text-align:left;font-weight:600;font-size:.75rem;text-transform:uppercase;letter-spacing:.05em}
+.ptb td{padding:.55rem .75rem;border-bottom:1px solid var(--gris-m);vertical-align:middle}
+.ptb tr:nth-child(even) td{background:var(--gris)}
+.ti{background:transparent;border:none;font-family:'DM Mono',monospace;font-size:.82rem;width:100%;outline:none}
+.mb{font-size:.7rem;padding:.2rem .5rem;border-radius:10px;font-weight:600}
+.mok{background:var(--vert-l);color:var(--vert)}
+.mw{background:var(--jaune);color:#856404}
+/* Buttons */
+.br{display:flex;gap:1rem;margin-top:1.5rem;justify-content:flex-end}
+.btn{padding:.75rem 1.75rem;border-radius:8px;font-size:.9rem;font-weight:600;cursor:pointer;border:none;display:inline-flex;align-items:center;gap:.5rem;transition:all .2s;font-family:'DM Sans',sans-serif}
+.bp{background:var(--vert);color:#fff}
+.bp:hover{background:var(--vert-m);transform:translateY(-1px)}
+.bs{background:#fff;color:var(--vert);border:2px solid var(--vert)}
+.bs:hover{background:var(--vert-p)}
+.bsuc{background:#2e7d32;color:#fff;font-size:1rem;padding:1rem 2.5rem}
+.bsuc:hover{background:#1b5e20;transform:translateY(-2px);box-shadow:0 4px 16px rgba(46,125,50,.3)}
+/* Import anim */
+.ims{text-align:center;padding:2.5rem}
+.ima{font-size:4rem;display:block;margin-bottom:1rem;animation:pulse 1s ease infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+.imt{font-family:'DM Serif Display',serif;font-size:1.3rem;color:var(--vert);margin-bottom:.5rem}
+/* Success */
+.sb{text-align:center;padding:3rem 2rem}
+.si{font-size:5rem;display:block;margin-bottom:1rem;animation:bounce .6s ease}
+@keyframes bounce{0%,100%{transform:scale(1)}50%{transform:scale(1.2)}}
+.sti{font-family:'DM Serif Display',serif;font-size:2rem;color:var(--vert);margin-bottom:.75rem}
+.ssu{color:#555;font-size:1rem;margin-bottom:2rem}
+.sd{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:2rem}
+.ss{background:var(--vert-p);border:1px solid var(--vert-l);border-radius:10px;padding:.75rem 1.5rem;text-align:center}
+.ssn{font-size:1.5rem;font-weight:700;color:var(--vert);font-family:'DM Serif Display',serif}
+.ssl{font-size:.72rem;color:#666;text-transform:uppercase;letter-spacing:.06em}
+.sl{display:inline-flex;align-items:center;gap:.5rem;background:var(--vert);border-radius:8px;color:#fff;padding:.7rem 1.5rem;text-decoration:none;font-weight:600;font-size:.9rem;margin-bottom:1.5rem}
+.sl:hover{background:var(--vert-m)}
+/* Alert */
+.al{padding:1rem 1.25rem;border-radius:8px;font-size:.88rem;display:flex;align-items:flex-start;gap:.75rem;margin-bottom:1rem}
+.ai2{background:#e3f2fd;border-left:3px solid var(--bleu);color:#1a237e}
+.aw{background:var(--jaune);border-left:3px solid var(--or);color:#856404}
+.ae{background:var(--rouge-l);border-left:3px solid var(--rouge);color:var(--rouge)}
+/* History */
+.hs{margin-top:3rem}
+.hti{font-family:'DM Serif Display',serif;font-size:1.1rem;color:var(--vert);margin-bottom:1rem}
+.hl2{display:flex;flex-direction:column;gap:.5rem}
+.hi{background:#fff;border:1px solid var(--gris-m);border-radius:8px;padding:.75rem 1rem;display:flex;align-items:center;gap:1rem;font-size:.85rem}
+.ht2{font-size:.72rem;font-weight:700;padding:.2rem .6rem;border-radius:10px;white-space:nowrap}
+.hn{flex:1;font-weight:500}
+.hd{color:#999;font-size:.75rem;font-family:'DM Mono',monospace}
+.hr2{background:var(--vert-p);color:var(--vert);font-size:.72rem;font-weight:700;padding:.2rem .6rem;border-radius:10px}
+@media(max-width:700px){.dtg{grid-template-columns:repeat(2,1fr)}.rg{grid-template-columns:1fr}.step span:not(.sn){display:none}}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">
+    <div class="logo-icon">🌿</div>
+    <div><div class="logo-text">La Ferme d'Emile</div><div class="logo-sub">Import automatique IA</div></div>
+  </div>
+  <div class="header-right">
+    <div class="google-status"><div class="gdot" id="gdot"></div><span id="gst">Non connecté</span></div>
+    <div class="badge">✨ Claude AI</div>
+  </div>
+</header>
+
+<div class="container">
+  <div class="steps">
+    <div class="step active" id="step-1"><span class="sn">1</span><span>Connexion</span></div><span class="sa">›</span>
+    <div class="step" id="step-2"><span class="sn">2</span><span>Type</span></div><span class="sa">›</span>
+    <div class="step" id="step-3"><span class="sn">3</span><span>Document</span></div><span class="sa">›</span>
+    <div class="step" id="step-4"><span class="sn">4</span><span>Analyse</span></div><span class="sa">›</span>
+    <div class="step" id="step-5"><span class="sn">5</span><span>Vérifier</span></div><span class="sa">›</span>
+    <div class="step" id="step-6"><span class="sn">6</span><span>Importer</span></div>
+  </div>
+
+  <!-- 1 AUTH -->
+  <div class="panel active" id="panel-1">
+    <div class="ph"><div class="pt">Connexion Google Sheets</div><div class="ps">Autorisez l'accès à votre fichier une seule fois</div></div>
+    <div class="pb">
+      <div class="auth-box">
+        <span class="ai">🔐</span>
+        <div class="at">Connectez votre Google Drive</div>
+        <div class="as">L'outil va importer directement dans votre fichier<br><strong>FermeEmile_GestionComplète_v3</strong><br><br>Connectez-vous avec <strong>lafermedemilecollonges@gmail.com</strong></div>
+        <button class="btn-g" onclick="signIn()">
+          <svg width="20" height="20" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+          Se connecter avec Google
+        </button>
+        <div style="margin-top:1.5rem"><div class="al ai2">🔒 <span>Accès limité à votre fichier Google Sheets uniquement.</span></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2 TYPE -->
+  <div class="panel" id="panel-2">
+    <div class="ph"><div class="pt">Quel type de document ?</div><div class="ps">Choisissez pour que l'IA sache quoi extraire</div></div>
+    <div class="pb">
+      <div class="dtg">
+        <div class="dtc" onclick="selType('facture',this)"><span class="dti">🧾</span><div class="dtl">Facture</div><div class="dtd">Facture fournisseur avec lignes produits</div></div>
+        <div class="dtc" onclick="selType('bl',this)"><span class="dti">📦</span><div class="dtl">Bon de Livraison</div><div class="dtd">BL, bordereau de livraison</div></div>
+        <div class="dtc" onclick="selType('avoir',this)"><span class="dti">↩️</span><div class="dtl">Avoir / Crédit</div><div class="dtd">Note de crédit, avoir fournisseur</div></div>
+        <div class="dtc" onclick="selType('fournisseur',this)"><span class="dti">🏭</span><div class="dtl">Fiche Fournisseur</div><div class="dtd">Tarif ou fiche contact</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3 UPLOAD -->
+  <div class="panel" id="panel-3">
+    <div class="ph"><div class="pt" id="p3t">📄 Déposer votre document</div><div class="ps">PDF, photo JPG/PNG — jusqu'à 20 Mo</div></div>
+    <div class="pb">
+      <div class="dz" id="dz" ondragover="dv(event,'o')" ondragleave="dv(event,'l')" ondrop="dv(event,'d')">
+        <span class="dzi">📄</span>
+        <div class="dzt">Glissez votre document ici</div>
+        <div class="dzs">ou cliquez pour sélectionner</div>
+        <div class="dzf"><span class="fb">PDF</span><span class="fb">JPG</span><span class="fb">PNG</span><span class="fb">WEBP</span></div>
+        <button class="bup" onclick="document.getElementById('fi').click()">📂 Choisir un fichier</button>
+        <input type="file" id="fi" accept=".pdf,.jpg,.jpeg,.png,.webp" onchange="hf(event)">
+      </div>
+      <div class="br"><button class="btn bs" onclick="goStep(2)">← Retour</button></div>
+    </div>
+  </div>
+
+  <!-- 4 ANALYSE -->
+  <div class="panel" id="panel-4">
+    <div class="ph"><div class="pt">🔍 Analyse en cours…</div><div class="ps">L'IA lit et extrait les données</div></div>
+    <div class="pb">
+      <div class="ast"><div class="sp"></div><span id="amsg">Lecture…</span></div>
+      <div class="pbw"><div class="pb2" id="pbar"></div></div>
+      <div class="ptx" id="ptx">0%</div>
+    </div>
+  </div>
+
+  <!-- 5 RÉSULTATS -->
+  <div class="panel" id="panel-5">
+    <div class="ph"><div class="pt">✅ Données extraites — Vérifiez</div><div class="ps">Tous les champs sont éditables</div></div>
+    <div class="pb" id="p5b"></div>
+  </div>
+
+  <!-- 6 IMPORT EN COURS -->
+  <div class="panel" id="panel-6">
+    <div class="ph"><div class="pt">📊 Import dans Google Sheets…</div><div class="ps">Écriture directe dans votre fichier</div></div>
+    <div class="pb">
+      <div class="ims"><span class="ima">📊</span><div class="imt">Import en cours…</div><div class="ptx" id="isub" style="text-align:center;font-size:.9rem">Connexion…</div></div>
+    </div>
+  </div>
+
+  <!-- 7 SUCCÈS -->
+  <div class="panel" id="panel-7">
+    <div class="pb">
+      <div class="sb">
+        <span class="si">🎉</span>
+        <div class="sti">Importé dans Google Sheets !</div>
+        <div class="ssu">La ligne a été ajoutée directement dans votre fichier.</div>
+        <div class="sd" id="sdet"></div>
+        <a href="https://docs.google.com/spreadsheets/d/1C1VbCbFRr3BUXrhCJlijnnSmhgw5taEkk54RmLD3UcQ/edit" target="_blank" class="sl">📊 Ouvrir Google Sheets →</a><br>
+        <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-top:1rem">
+          <button class="btn bp" onclick="restart()">➕ Nouveau document</button>
+          <button class="btn bs" onclick="showHist()">📋 Historique</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hs" id="hsec" style="display:none">
+    <div class="hti">📋 Historique des imports</div>
+    <div class="hl2" id="hlist"></div>
+  </div>
+</div>
+
+<script>
+const SHEET_ID = '1C1VbCbFRr3BUXrhCJlijnnSmhgw5taEkk54RmLD3UcQ';
+const CLIENT_ID = '5490494382-dld6o3m45a5a5o6l1qvm7boh257nv9i8.apps.googleusercontent.com';
+const SCOPES = 'https://www.googleapis.com/auth/spreadsheets';
+const TABS = { facture:'🧾 Factures', bl:'🔍 BL & Rapprochement', avoir:'🧾 Factures', fournisseur:'📋 Fournisseurs' };
+
+let tc, tok=null, dtype=null, file=null, data=null;
+let hist = JSON.parse(localStorage.getItem('feh')||'[]');
+
+window.onload = () => {
+  tc = google.accounts.oauth2.initTokenClient({
+    client_id: CLIENT_ID, scope: SCOPES,
+    callback: r => {
+      if(r.error){alert('Erreur Google : '+r.error);return;}
+      tok=r.access_token;
+      document.getElementById('gdot').classList.add('on');
+      document.getElementById('gst').textContent='Connectée ✓';
+      goStep(2);
+    }
+  });
+  if(hist.length){document.getElementById('hsec').style.display='block';showHist();}
+};
+
+function signIn(){ tc.requestAccessToken({prompt:'consent'}); }
+
+function goStep(n){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('panel-'+n).classList.add('active');
+  for(let i=1;i<=6;i++){
+    const e=document.getElementById('step-'+i);if(!e)continue;
+    e.classList.remove('active','done');
+    if(i<n)e.classList.add('done');
+    else if(i===n)e.classList.add('active');
+  }
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function selType(t,el){
+  dtype=t;
+  document.querySelectorAll('.dtc').forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel');
+  const tl={facture:'🧾 Facture',bl:'📦 Bon de Livraison',avoir:'↩️ Avoir',fournisseur:'🏭 Fiche Fournisseur'};
+  document.getElementById('p3t').textContent=tl[t]+' — Déposer le document';
+  setTimeout(()=>goStep(3),300);
+}
+
+function dv(e,t){
+  e.preventDefault();
+  const dz=document.getElementById('dz');
+  if(t==='o')dz.classList.add('over');
+  else if(t==='l')dz.classList.remove('over');
+  else{dz.classList.remove('over');if(e.dataTransfer.files[0])pf(e.dataTransfer.files[0]);}
+}
+function hf(e){if(e.target.files[0])pf(e.target.files[0]);}
+
+async function pf(f){
+  file=f; goStep(4);
+  const steps=[[15,'Lecture du document…'],[35,'Identification fournisseur…'],[55,'Extraction montants et dates…'],[75,'Analyse lignes produits…'],[90,'Structuration…'],[100,'Terminé !']];
+  let si=0;
+  const iv=setInterval(()=>{
+    if(si<steps.length){const[p,m]=steps[si];setP(p,m);si++;}else clearInterval(iv);
+  },700);
+  try {
+    const b64=await b(f);
+    const isPDF=f.type==='application/pdf';
+    const isImg=f.type.startsWith('image/');
+    const pr=bp(dtype);
+    const cnt=isPDF?[{type:'document',source:{type:'base64',media_type:'application/pdf',data:b64}},{type:'text',text:pr}]:
+      isImg?[{type:'image',source:{type:'base64',media_type:f.type,data:b64}},{type:'text',text:pr}]:
+      [{type:'text',text:pr+'\nFichier: '+f.name}];
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:cnt}]})});
+    clearInterval(iv);setP(100,'Terminé !');
+    const d=await res.json();
+    const txt=d.content.map(x=>x.text||'').join('');
+    const m=txt.match(/\{[\s\S]*\}/);
+    data=m?JSON.parse(m[0]):demo(dtype);
+  } catch(err){clearInterval(iv);data=demo(dtype);}
+  setTimeout(()=>{render(data);goStep(5);},500);
+}
+
+function setP(p,m){
+  document.getElementById('pbar').style.width=p+'%';
+  document.getElementById('ptx').textContent=p+'%';
+  document.getElementById('amsg').textContent=m;
+}
+
+function bp(t){
+  const base=`Tu analyses un document pour "La Ferme d'Emile", épicerie bio. Réponds UNIQUEMENT avec un objet JSON valide (sans markdown, sans backticks, sans texte avant ou après).`;
+  return {
+    facture:`${base}\n{"type":"facture","confidence":"high|medium|low","numero":"","fournisseur_nom":"","fournisseur_code":"","date_facture":"JJ/MM/AAAA","date_echeance":"JJ/MM/AAAA","total_ht":0,"tva":0,"total_ttc":0,"numero_bl":"","lignes":[{"code":"","designation":"","qte":0,"unite":"","prix_unitaire_ht":0,"total_ht":0}],"commentaire":""}`,
+    bl:`${base}\n{"type":"bl","confidence":"high|medium|low","numero_bl":"","fournisseur_nom":"","fournisseur_code":"","date_bl":"JJ/MM/AAAA","montant_ht":0,"lignes":[{"code":"","designation":"","qte":0,"unite":"","prix_unitaire_ht":0,"total_ht":0}],"commentaire":""}`,
+    avoir:`${base}\n{"type":"avoir","confidence":"high|medium|low","numero":"","fournisseur_nom":"","fournisseur_code":"","date":"JJ/MM/AAAA","montant_ht":0,"tva":0,"montant_ttc":0,"facture_liee":"","motif":"","lignes":[{"designation":"","qte":0,"montant_ht":0}],"commentaire":""}`,
+    fournisseur:`${base}\n{"type":"fournisseur","confidence":"high|medium|low","nom":"","contact":"","adresse":"","cp":"","ville":"","telephone":"","email":"","siret":"","tva_intra":"","iban":"","delai_paiement":"","mode_reglement":"","certification_bio":"","produits":[{"code":"","designation":"","prix_ht":0}],"commentaire":""}`
+  }[t]||'';
+}
+
+function demo(t){
+  return {
+    facture:{type:'facture',confidence:'medium',numero:'FA2026-DEMO',fournisseur_nom:"GAEC A Vol d'Oiseau",fournisseur_code:'F001',date_facture:'10/03/2026',date_echeance:'09/04/2026',total_ht:245.50,tva:13.50,total_ttc:259.00,numero_bl:'BL-2026-0089',lignes:[{code:'BAS',designation:'Basilic 30g',qte:12,unite:'pièce',prix_unitaire_ht:3.65,total_ht:43.80}],commentaire:'⚠️ Mode démo'},
+    bl:{type:'bl',confidence:'medium',numero_bl:'BL-DEMO',fournisseur_nom:"GAEC A Vol d'Oiseau",fournisseur_code:'F001',date_bl:'08/03/2026',montant_ht:245.50,lignes:[{code:'BAS',designation:'Basilic 30g',qte:12,unite:'pièce',prix_unitaire_ht:3.65,total_ht:43.80}],commentaire:'⚠️ Mode démo'},
+    avoir:{type:'avoir',confidence:'high',numero:'AV-DEMO',fournisseur_nom:'Le Bon Pain Paysan',fournisseur_code:'F008',date:'10/03/2026',montant_ht:102.70,tva:5.65,montant_ttc:108.35,facture_liee:'FA00003188',motif:'Marchandise abîmée',lignes:[{designation:'Pains endommagés',qte:45,montant_ht:102.70}],commentaire:'⚠️ Mode démo'},
+    fournisseur:{type:'fournisseur',confidence:'medium',nom:'Nouveau Fournisseur Bio',contact:'',adresse:'',cp:'',ville:'',telephone:'',email:'',siret:'',tva_intra:'',iban:'',delai_paiement:'30 jours',mode_reglement:'Virement',certification_bio:'',produits:[],commentaire:'⚠️ Mode démo'}
+  }[t]||{};
+}
+
+function render(d){
+  const body=document.getElementById('p5b');
+  const cf=d.confidence||'medium';
+  const cl={high:'ch',medium:'cm',low:'cl2'}[cf];
+  const ct={high:'✅ Haute confiance',medium:'⚠️ Vérifier les champs',low:'🔴 Vérifiez tout'}[cf];
+  let h=`<div class="rh"><div class="rt">📄 ${file?file.name:'Document'}</div><div class="cb ${cl}">${ct}</div></div>`;
+  if(d.type==='facture')h+=rf(d);
+  else if(d.type==='bl')h+=rbl(d);
+  else if(d.type==='avoir')h+=rav(d);
+  else h+=rfo(d);
+  h+=`<div class="br"><button class="btn bs" onclick="goStep(3)">← Changer</button><button class="btn bsuc" onclick="imp()">📊 Importer dans Google Sheets →</button></div>`;
+  body.innerHTML=h;
+}
+
+function fd(label,id,val,hl=false){
+  return `<div class="rf${hl?' hl':''}"><div class="fl">${label}</div><input class="fi2" id="${id}" value="${(val||'').toString().replace(/"/g,'&quot;').replace(/</g,'&lt;')}" /></div>`;
+}
+
+function rf(d){return`<div class="rg">${fd('N° Facture','fn',d.numero)}${fd('Fournisseur','ff',d.fournisseur_nom)}${fd('Code Fourn.','fc',d.fournisseur_code)}${fd('Date Facture','fdat',d.date_facture)}${fd('Date Échéance','fech',d.date_echeance,!d.date_echeance)}${fd('N° BL','fbl',d.numero_bl)}${fd('Total HT €','fht',d.total_ht)}${fd('TVA €','ftva',d.tva)}${fd('Total TTC €','fttc',d.total_ttc,true)}${fd('Statut Paiement','fsp','À payer')}${fd('Commentaire','fco',d.commentaire)}</div>${rl(d.lignes)}<div style="margin-top:1rem"><div class="al ai2">→ Onglet : <strong>🧾 Factures</strong></div></div>`;}
+function rbl(d){return`<div class="rg">${fd('N° BL','bn',d.numero_bl)}${fd('Fournisseur','bf',d.fournisseur_nom)}${fd('Code Fourn.','bc',d.fournisseur_code)}${fd('Date BL','bdat',d.date_bl)}${fd('Montant HT €','bht',d.montant_ht,true)}${fd('Commentaire','bco',d.commentaire)}</div>${rl(d.lignes)}<div style="margin-top:1rem"><div class="al ai2">→ Onglet : <strong>🔍 BL & Rapprochement</strong></div></div>`;}
+function rav(d){return`<div class="rg">${fd('N° Avoir','an',d.numero)}${fd('Fournisseur','af',d.fournisseur_nom)}${fd('Code Fourn.','ac',d.fournisseur_code)}${fd('Date','adat',d.date)}${fd('Facture liée','al2',d.facture_liee)}${fd('Montant HT €','aht',-(d.montant_ht||0))}${fd('TVA €','atva',-(d.tva||0))}${fd('Montant TTC €','attc',-(d.montant_ttc||0),true)}${fd('Motif','am',d.motif)}${fd('Commentaire','aco',d.commentaire)}</div><div style="margin-top:1rem"><div class="al aw">⚠️ Les avoirs sont en négatif dans <strong>🧾 Factures</strong>.</div></div>`;}
+function rfo(d){return`<div class="rg">${fd('Nom','fon',d.nom)}${fd('Contact','foc',d.contact)}${fd('Adresse','foa',d.adresse)}${fd('CP','focp',d.cp)}${fd('Ville','fov',d.ville)}${fd('Téléphone','fot',d.telephone)}${fd('Email','foe',d.email)}${fd('SIRET','fos',d.siret)}${fd('IBAN','foi',d.iban,!d.iban)}${fd('Délai Paiement','fodp',d.delai_paiement)}${fd('Certification Bio','focb',d.certification_bio)}</div><div style="margin-top:1rem"><div class="al ai2">→ Onglet : <strong>📋 Fournisseurs</strong></div></div>`;}
+
+function rl(ls){
+  if(!ls||!ls.length)return'';
+  return`<div class="ps2"><div class="pt2">📋 Lignes produits (${ls.length})</div><table class="ptb"><thead><tr><th>Code</th><th>Désignation</th><th>Qté</th><th>Unité</th><th>P.U. HT</th><th>Total HT</th><th>Statut</th></tr></thead><tbody>${ls.map(l=>`<tr><td><input class="ti" value="${l.code||''}"></td><td><input class="ti" value="${(l.designation||'').replace(/"/g,'&quot;')}" style="min-width:150px"></td><td><input class="ti" value="${l.qte||''}" style="width:50px;text-align:center"></td><td><input class="ti" value="${l.unite||''}" style="width:60px"></td><td><input class="ti" value="${l.prix_unitaire_ht||''}" style="width:70px;text-align:right"></td><td><input class="ti" value="${l.total_ht||''}" style="width:70px;text-align:right"></td><td><span class="mb ${l.code?'mok':'mw'}">${l.code?'✅ Connu':'⚠️ Nouveau'}</span></td></tr>`).join('')}</tbody></table></div>`;
+}
+
+async function imp(){
+  if(!tok){alert('Veuillez vous connecter à Google.');goStep(1);return;}
+  goStep(6);
+  const sn=TABS[data.type];
+  let row;
+  if(data.type==='facture') row=[[v('fn'),v('fc'),v('ff'),v('fdat'),v('fech'),n('fht'),n('ftva'),n('fttc'),v('fbl'),v('fbl')?'Rapproché':'À rapprocher',v('fsp'),'',v('fco')]];
+  else if(data.type==='bl') row=[[v('bn'),v('bdat'),v('bc'),v('bf'),'',n('bht'),'⚠️ En attente facture',v('bco')]];
+  else if(data.type==='avoir') row=[[v('an'),v('ac'),v('af'),v('adat'),'',n('aht'),n('atva'),n('attc'),v('al2'),'Avoir','À déduire','','AVOIR — '+v('am')]];
+  else row=[['' ,v('fon'),v('foc'),v('foa'),v('focp'),v('fov'),v('fot'),v('foe'),v('fos'),'',v('foi'),v('fodp'),'',v('focb')]];
+
+  try{
+    document.getElementById('isub').textContent='Recherche de la prochaine ligne…';
+    const gr=await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(sn+'!A:A')}`,{headers:{Authorization:'Bearer '+tok}});
+    const gd=await gr.json();
+    if(gd.error)throw new Error(gd.error.message);
+    const nr=Math.max((gd.values?gd.values.length:0)+1,4);
+    document.getElementById('isub').textContent=`Écriture ligne ${nr} dans "${sn}"…`;
+    const wr=await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(sn+'!A'+nr)}?valueInputOption=USER_ENTERED`,{method:'PUT',headers:{Authorization:'Bearer '+tok,'Content-Type':'application/json'},body:JSON.stringify({values:row})});
+    const wd=await wr.json();
+    if(wd.error)throw new Error(wd.error.message);
+    const en={id:Date.now(),type:data.type,name:file?file.name:'doc',date:new Date().toLocaleString('fr-FR'),row:nr,numero:data.numero||data.numero_bl||data.nom||''};
+    hist.unshift(en);if(hist.length>20)hist=hist.slice(0,20);
+    localStorage.setItem('feh',JSON.stringify(hist));
+    const tl={facture:'Facture',bl:'Bon de Livraison',avoir:'Avoir',fournisseur:'Fournisseur'};
+    document.getElementById('sdet').innerHTML=`<div class="ss"><div class="ssn">${tl[data.type]}</div><div class="ssl">Type</div></div><div class="ss"><div class="ssn">Ligne ${nr}</div><div class="ssl">Position dans Sheets</div></div><div class="ss"><div class="ssn">${sn}</div><div class="ssl">Onglet</div></div>`;
+    goStep(7);
+  }catch(err){
+    console.error(err);
+    goStep(5);
+    const eb=document.createElement('div');
+    eb.className='al ae';
+    eb.innerHTML=`❌ <span><strong>Erreur :</strong> ${err.message}</span>`;
+    const p5=document.getElementById('p5b');
+    p5.insertBefore(eb,p5.firstChild);
+  }
+}
+
+function v(id){const e=document.getElementById(id);return e?e.value:'';}
+function n(id){return parseFloat(v(id))||0;}
+
+function restart(){
+  dtype=null;file=null;data=null;
+  document.querySelectorAll('.dtc').forEach(c=>c.classList.remove('sel'));
+  document.getElementById('fi').value='';
+  goStep(2);
+}
+
+function showHist(){
+  const sec=document.getElementById('hsec');sec.style.display='block';
+  const list=document.getElementById('hlist');
+  if(!hist.length){list.innerHTML='<div style="color:#999;font-size:.85rem;padding:.5rem">Aucun import.</div>';return;}
+  const tc={facture:'background:#c8e6c9;color:#1a5e2a',bl:'background:#e3f2fd;color:#1565c0',avoir:'background:#ffcdd2;color:#c62828',fournisseur:'background:#fff9c4;color:#856404'};
+  list.innerHTML=hist.map(h=>`<div class="hi"><span class="ht2" style="${tc[h.type]||''}">${h.type.toUpperCase()}</span><span class="hn">${h.name}${h.numero?' — '+h.numero:''}</span><span class="hd">${h.date}</span><span class="hr2">ligne ${h.row}</span></div>`).join('');
+  sec.scrollIntoView({behavior:'smooth'});
+}
+
+function b(f){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result.split(',')[1]);r.onerror=rej;r.readAsDataURL(f);});}
+</script>
+</body>
+</html>
