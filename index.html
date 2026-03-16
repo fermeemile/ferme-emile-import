@@ -331,10 +331,16 @@ function hf(e){if(e.target.files[0])pf(e.target.files[0]);}
 
 async function loadFournisseurs(){
   try{
-    const r=await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent('📋 Fournisseurs!A4:C200')}`,{headers:{Authorization:'Bearer '+tok}});
+    // Renouveler le token si expire
+    const test=await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+'/values/A1',{headers:{Authorization:'Bearer '+tok}});
+    const td=await test.json();
+    if(td.error&&td.error.code===401){
+      await new Promise(res=>tc.requestAccessToken({prompt:'',callback:r=>{if(!r.error)tok=r.access_token;res();}}));
+    }
+    const r=await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+'/values/'+encodeURIComponent('📋 Fournisseurs!A4:C200'),{headers:{Authorization:'Bearer '+tok}});
     const d=await r.json();
     if(d.error||!d.values)return'';
-    return d.values.filter(row=>row[0]&&row[1]).map(row=>`${row[1]}=${row[0]}`).join(', ');
+    return d.values.filter(row=>row[0]&&row[1]).map(row=>row[1]+'='+row[0]).join(', ');
   }catch(e){return'';}
 }
 
