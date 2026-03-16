@@ -503,6 +503,34 @@ function showHist(){
 }
 
 function b(f){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result.split(',')[1]);r.onerror=rej;r.readAsDataURL(f);});}
+
+async function activateFilters(){
+  if(!tok){alert('Connectez-vous a Google d abord.');return;}
+  const fm=document.getElementById('fmsg');
+  fm.style.color='#666';fm.textContent='Activation en cours...';
+  try{
+    const r=await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+'?fields=sheets.properties',{headers:{Authorization:'Bearer '+tok}});
+    const d=await r.json();
+    if(d.error)throw new Error(d.error.message);
+    const cibles={'🧾 Factures':2,'🔍 BL & Rapprochement':2,'📋 Fournisseurs':2,'🔧 Produits & Marges':2};
+    const requests=[];
+    let nb=0;
+    for(const sheet of d.sheets){
+      const title=sheet.properties.title;
+      if(cibles[title]!==undefined){
+        requests.push({clearBasicFilter:{sheetId:sheet.properties.sheetId}});
+        requests.push({setBasicFilter:{filter:{range:{sheetId:sheet.properties.sheetId,startRowIndex:cibles[title],startColumnIndex:0,endColumnIndex:15}}}});
+        nb++;
+      }
+    }
+    if(!requests.length){fm.textContent='Aucun onglet trouve.';return;}
+    const res=await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+':batchUpdate',{method:'POST',headers:{Authorization:'Bearer '+tok,'Content-Type':'application/json'},body:JSON.stringify({requests})});
+    const rd=await res.json();
+    if(rd.error)throw new Error(rd.error.message);
+    fm.style.color='#2e7d32';
+    fm.textContent='Filtres actives sur '+nb+' onglets !';
+  }catch(err){fm.style.color='#c62828';fm.textContent='Erreur : '+err.message;}
+}
 </script>
 </body>
 </html>
