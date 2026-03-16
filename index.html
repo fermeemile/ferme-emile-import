@@ -325,18 +325,27 @@ function dv(e,t){
 }
 function hf(e){if(e.target.files[0])pf(e.target.files[0]);}
 
+async function loadFournisseurs(){
+  try{
+    const r=await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent('📋 Fournisseurs!A4:C200')}`,{headers:{Authorization:'Bearer '+tok}});
+    const d=await r.json();
+    if(d.error||!d.values)return'';
+    return d.values.filter(row=>row[0]&&row[1]).map(row=>`${row[1]}=${row[0]}`).join(', ');
+  }catch(e){return'';}
+}
+
 async function pf(f){
   file=f; goStep(4);
-  const steps=[[15,'Lecture du document…'],[35,'Identification fournisseur…'],[55,'Extraction montants et dates…'],[75,'Analyse lignes produits…'],[90,'Structuration…'],[100,'Terminé !']];
+  const steps=[[10,'Chargement fournisseurs…'],[25,'Lecture du document…'],[45,'Identification fournisseur…'],[65,'Extraction montants et dates…'],[80,'Analyse lignes produits…'],[95,'Structuration…'],[100,'Terminé !']];
   let si=0;
   const iv=setInterval(()=>{
     if(si<steps.length){const[p,m]=steps[si];setP(p,m);si++;}else clearInterval(iv);
   },700);
   try {
-    const b64=await b(f);
+    const [b64, listeF] = await Promise.all([b(f), loadFournisseurs()]);
     const isPDF=f.type==='application/pdf';
     const isImg=f.type.startsWith('image/');
-    const pr=bp(dtype);
+    const pr=bp(dtype, listeF);
     const cnt=isPDF?[{type:'document',source:{type:'base64',media_type:'application/pdf',data:b64}},{type:'text',text:pr}]:
       isImg?[{type:'image',source:{type:'base64',media_type:f.type,data:b64}},{type:'text',text:pr}]:
       [{type:'text',text:pr+'\nFichier: '+f.name}];
@@ -356,12 +365,13 @@ function setP(p,m){
   document.getElementById('amsg').textContent=m;
 }
 
-function bp(t){
+function bp(t, listeF){
   const base=`Tu analyses un document pour "La Ferme d'Emile", épicerie bio. Réponds UNIQUEMENT avec un objet JSON valide (sans markdown, sans backticks, sans texte avant ou après).`;
+  const fournisseurs=listeF?`LISTE FOURNISSEURS (nom=code): ${listeF}. Utilise le code correspondant dans fournisseur_code. Si non trouvé, laisse vide.`:'';
   return {
-    facture:`${base}\n{"type":"facture","confidence":"high|medium|low","numero":"","fournisseur_nom":"","fournisseur_code":"","date_facture":"JJ/MM/AAAA","date_echeance":"JJ/MM/AAAA","total_ht":0,"tva":0,"total_ttc":0,"numero_bl":"","lignes":[{"code":"","designation":"","qte":0,"unite":"","prix_unitaire_ht":0,"total_ht":0}],"commentaire":""}`,
-    bl:`${base} IMPORTANT: le fournisseur est celui QUI ENVOIE la marchandise (expediteur, en haut a gauche). Le destinataire "SAS LES P'TITS POULETS" ou "lafermedemilecollonges" est La Ferme d'Emile, NE PAS le mettre comme fournisseur. Le commentaire doit etre vide.\n{"type":"bl","confidence":"high|medium|low","numero_bl":"","fournisseur_nom":"","fournisseur_code":"","date_bl":"JJ/MM/AAAA","montant_ht":0,"lignes":[{"code":"","designation":"","qte":0,"unite":"","prix_unitaire_ht":0,"total_ht":0}],"commentaire":""}`,
-    avoir:`${base}\n{"type":"avoir","confidence":"high|medium|low","numero":"","fournisseur_nom":"","fournisseur_code":"","date":"JJ/MM/AAAA","montant_ht":0,"tva":0,"montant_ttc":0,"facture_liee":"","motif":"","lignes":[{"designation":"","qte":0,"montant_ht":0}],"commentaire":""}`,
+    facture:`${base}\n${fournisseurs}\n{"type":"facture","confidence":"high|medium|low","numero":"","fournisseur_nom":"","fournisseur_code":"","date_facture":"JJ/MM/AAAA","date_echeance":"JJ/MM/AAAA","total_ht":0,"tva":0,"total_ttc":0,"numero_bl":"","lignes":[{"code":"","designation":"","qte":0,"unite":"","prix_unitaire_ht":0,"total_ht":0}],"commentaire":""}`,
+    bl:`${base}\n${fournisseurs}\nIMPORTANT: le fournisseur est celui QUI ENVOIE la marchandise (expediteur). Le destinataire "SAS LES P'TITS POULETS" ou "lafermedemilecollonges" est La Ferme d'Emile, NE PAS le mettre comme fournisseur. Commentaire vide.\n{"type":"bl","confidence":"high|medium|low","numero_bl":"","fournisseur_nom":"","fournisseur_code":"","date_bl":"JJ/MM/AAAA","montant_ht":0,"lignes":[{"code":"","designation":"","qte":0,"unite":"","prix_unitaire_ht":0,"total_ht":0}],"commentaire":""}`,
+    avoir:`${base}\n${fournisseurs}\n{"type":"avoir","confidence":"high|medium|low","numero":"","fournisseur_nom":"","fournisseur_code":"","date":"JJ/MM/AAAA","montant_ht":0,"tva":0,"montant_ttc":0,"facture_liee":"","motif":"","lignes":[{"designation":"","qte":0,"montant_ht":0}],"commentaire":""}`,
     fournisseur:`${base}\n{"type":"fournisseur","confidence":"high|medium|low","nom":"","contact":"","adresse":"","cp":"","ville":"","telephone":"","email":"","siret":"","tva_intra":"","iban":"","delai_paiement":"","mode_reglement":"","certification_bio":"","produits":[{"code":"","designation":"","prix_ht":0}],"commentaire":""}`
   }[t]||'';
 }
