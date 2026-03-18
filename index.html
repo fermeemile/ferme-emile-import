@@ -524,7 +524,14 @@ async function autoSaveProduits(d){
     if(sheet){
       const sid=sheet.properties.sheetId;
       const srcRow=lastRow-2;
-      const reqs=nouveaux.map((_,i)=>({copyPaste:{source:{sheetId:sid,startRowIndex:srcRow,endRowIndex:srcRow+1,startColumnIndex:0,endColumnIndex:14},destination:{sheetId:sid,startRowIndex:lastRow-1+i,endRowIndex:lastRow+i,startColumnIndex:0,endColumnIndex:14},pasteType:'PASTE_FORMAT'}}));
+      // Copier format ET formules
+      const reqs=[];
+      for(let i=0;i<nouveaux.length;i++){
+        // Format (couleurs, bordures)
+        reqs.push({copyPaste:{source:{sheetId:sid,startRowIndex:srcRow,endRowIndex:srcRow+1,startColumnIndex:0,endColumnIndex:14},destination:{sheetId:sid,startRowIndex:lastRow-1+i,endRowIndex:lastRow+i,startColumnIndex:0,endColumnIndex:14},pasteType:'PASTE_FORMAT'}});
+        // Formules colonnes H a K (index 7 a 10)
+        reqs.push({copyPaste:{source:{sheetId:sid,startRowIndex:srcRow,endRowIndex:srcRow+1,startColumnIndex:7,endColumnIndex:12},destination:{sheetId:sid,startRowIndex:lastRow-1+i,endRowIndex:lastRow+i,startColumnIndex:7,endColumnIndex:12},pasteType:'PASTE_FORMULA'}});
+      }
       await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+':batchUpdate',{method:'POST',headers:{Authorization:'Bearer '+tok,'Content-Type':'application/json'},body:JSON.stringify({requests:reqs})});
     }
     console.log(nouveaux.length+' produit(s) ajoute(s)');
