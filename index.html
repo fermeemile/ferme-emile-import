@@ -283,6 +283,8 @@ window.onload = () => {
       goStep(2);
     }
   });
+  const savedKey=localStorage.getItem('fe_apikey');
+  if(savedKey){const kf=document.getElementById('apikey');if(kf)kf.value=savedKey;}
   if(hist.length){document.getElementById('hsec').style.display='block';showHist();}
 };
 
