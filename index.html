@@ -361,13 +361,19 @@ async function pf(f){
     const cnt=isPDF?[{type:'document',source:{type:'base64',media_type:'application/pdf',data:b64}},{type:'text',text:pr}]:
       isImg?[{type:'image',source:{type:'base64',media_type:f.type,data:b64}},{type:'text',text:pr}]:
       [{type:'text',text:pr+'\nFichier: '+f.name}];
-    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':localStorage.getItem('fe_apikey')||'','anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:cnt}]})});
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':localStorage.getItem('fe_apikey')||'','anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:2000,messages:[{role:'user',content:cnt}]})});
     clearInterval(iv);setP(100,'Terminé !');
     const d=await res.json();
-    const txt=d.content.map(x=>x.text||'').join('');
-    const m=txt.match(/\{[\s\S]*\}/);
-    data=m?JSON.parse(m[0]):demo(dtype);
-  } catch(err){clearInterval(iv);data=demo(dtype);}
+    if(d.error){console.error('API error:',d.error);data=demo(dtype);}
+    else{
+      const txt=d.content.map(x=>x.text||'').join('');
+      console.log('API response:',txt.substring(0,200));
+      try{
+        const m=txt.match(/\{[\s\S]*\}/);
+        data=m?JSON.parse(m[0]):demo(dtype);
+      }catch(pe){console.error('Parse error:',pe);data=demo(dtype);}
+    }
+  } catch(err){clearInterval(iv);console.error('Fetch error:',err);data=demo(dtype);}
   setTimeout(()=>{render(data);goStep(5);},500);
 }
 
