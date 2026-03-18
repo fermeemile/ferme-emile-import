@@ -500,43 +500,35 @@ async function imp(){
 
 async function autoSaveProduits(d){
   try{
-    // Lire les codes produits existants dans Produits & Marges
-    const r=await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+'/values/'+encodeURIComponent('🔧 Produits & Marges!A4:E200'),{headers:{Authorization:'Bearer '+tok}});
+    const r=await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+'/values/'+encodeURIComponent('🔧 Produits & Marges!A4:N200'),{headers:{Authorization:'Bearer '+tok}});
     const rd=await r.json();
-    const existants=new Set((rd.values||[]).map(row=>(row[0]||'').toString().toUpperCase()));
-
-    // Trouver les nouveaux produits
-    const fournisseur=d.fournisseur_nom||'';
+    const rows=rd.values||[];
+    const existants=new Set(rows.map(row=>(row[0]||'').toString().toUpperCase()));
+    const fournisseur=(document.getElementById('ff')||document.getElementById('bf')||{value:''}).value||d.fournisseur_nom||'';
+    const tvaVal=(d.tva&&d.total_ht&&d.total_ht>0)?Math.round(d.tva/d.total_ht*100)+'%':'5,5%';
     const nouveaux=[];
     for(const l of (d.lignes||[])){
       const code=(l.code||'').toString().trim();
       if(code&&!existants.has(code.toUpperCase())){
-        nouveaux.push([
-          code,                          // A: Code Art
-          l.designation||'',            // B: Désignation
-          fournisseur,                   // C: Fournisseur
-          '',                            // D: Catégorie (vide)
-          l.prix_unitaire_ht||0         // E: Prix Achat HT
-        ]);
+        nouveaux.push([code,l.designation||'',fournisseur,'',l.prix_unitaire_ht||0,'',tvaVal,'','','','','','','En attente']);
       }
     }
-
     if(nouveaux.length===0)return;
-
-    // Trouver la dernière ligne de Produits & Marges
-    const lastRow=Math.max((rd.values||[]).length+4, 4);
-
-    // Ajouter les nouveaux produits
-    const wr=await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+'/values/'+encodeURIComponent('🔧 Produits & Marges!A'+lastRow)+'?valueInputOption=USER_ENTERED',{
-      method:'PUT',
-      headers:{Authorization:'Bearer '+tok,'Content-Type':'application/json'},
-      body:JSON.stringify({values:nouveaux})
-    });
+    const lastRow=rows.length+4;
+    const wr=await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+'/values/'+encodeURIComponent('🔧 Produits & Marges!A'+lastRow)+'?valueInputOption=USER_ENTERED',{method:'PUT',headers:{Authorization:'Bearer '+tok,'Content-Type':'application/json'},body:JSON.stringify({values:nouveaux})});
     const wrd=await wr.json();
-    if(!wrd.error){
-      console.log(nouveaux.length+' nouveau(x) produit(s) enregistré(s)');
+    if(wrd.error){console.error('write error:',wrd.error);return;}
+    // Copier le format de la derniere ligne existante
+    const si=await(await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+'?fields=sheets.properties',{headers:{Authorization:'Bearer '+tok}})).json();
+    const sheet=si.sheets.find(s=>s.properties.title==='🔧 Produits & Marges');
+    if(sheet){
+      const sid=sheet.properties.sheetId;
+      const srcRow=lastRow-2;
+      const reqs=nouveaux.map((_,i)=>({copyPaste:{source:{sheetId:sid,startRowIndex:srcRow,endRowIndex:srcRow+1,startColumnIndex:0,endColumnIndex:14},destination:{sheetId:sid,startRowIndex:lastRow-1+i,endRowIndex:lastRow+i,startColumnIndex:0,endColumnIndex:14},pasteType:'PASTE_FORMAT'}}));
+      await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+':batchUpdate',{method:'POST',headers:{Authorization:'Bearer '+tok,'Content-Type':'application/json'},body:JSON.stringify({requests:reqs})});
     }
-  }catch(e){console.error('autoSaveProduits error:',e);}
+    console.log(nouveaux.length+' produit(s) ajoute(s)');
+  }catch(e){console.error('autoSaveProduits:',e);}
 }
 
 function v(id){const e=document.getElementById(id);return e?e.value:'';}
