@@ -516,7 +516,15 @@ async function autoSaveProduits(d){
       }
     }
     if(nouveaux.length===0)return;
-    const lastRow=rows.length+4;
+    // Trouver la derniere ligne NON VIDE (ignorer les lignes vides)
+    let lastNonEmpty=0;
+    for(let i=rows.length-1;i>=0;i--){
+      if(rows[i]&&rows[i][0]&&rows[i][0].toString().trim()!==''){
+        lastNonEmpty=i;
+        break;
+      }
+    }
+    const lastRow=lastNonEmpty+5; // +4 pour l'offset (lignes 1-3 header) +1 pour la prochaine ligne
     // Ecrire les donnees avec formules directement
     const nouveauxAvecFormules=nouveaux.map((row,i)=>{
       const r=lastRow+i;
