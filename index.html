@@ -533,21 +533,32 @@ async function processTiller(f){
     const sheetsProds=(rd.values||[]).map((row,i)=>({row:i+4,code:row[0]||'',nom:row[1]||'',prixVente:row[5]||''})).filter(p=>p.code||p.nom);
 
     setP(70,'Rapprochement par designation...');
-    // Rapprochement simple par mots-clés
+    // Rapprochement ameliore - score strict
+    const stopWords=new Set(['BIO','KG','1L','5L','75CL','BOTTE','VRAC','FRAIS','CUIT','SEC','CRU','IGP','AOP','AOC','LES','DES','DU','DE','LA','LE','ET','AU']);
     const matches=[];
     for(const tp of tillerProds){
       const tName=tp.name.toUpperCase();
       let best=null;let bestScore=0;
+      const tWords=tName.split(/[\s\-\/,]+/).filter(w=>w.length>2&&!stopWords.has(w));
       for(const sp of sheetsProds){
         const sName=sp.nom.toUpperCase();
-        // Score basé sur mots communs
-        const tWords=tName.split(/[\s\-\/]+/).filter(w=>w.length>2);
-        const sWords=sName.split(/[\s\-\/]+/).filter(w=>w.length>2);
-        const common=tWords.filter(w=>sWords.some(sw=>sw.includes(w)||w.includes(sw)));
-        const score=common.length/(Math.max(tWords.length,sWords.length)||1);
-        if(score>bestScore&&score>0.3){bestScore=score;best=sp;}
+        const sWords=sName.split(/[\s\-\/,]+/).filter(w=>w.length>2&&!stopWords.has(w));
+        if(tWords.length===0||sWords.length===0)continue;
+        // Mots en commun stricts
+        const common=tWords.filter(tw=>sWords.some(sw=>{
+          if(tw===sw)return true; // exact
+          if(tw.length>=5&&sw.startsWith(tw.substring(0,5)))return true; // prefixe 5 chars
+          if(sw.length>=5&&tw.startsWith(sw.substring(0,5)))return true;
+          return false;
+        }));
+        // Score = proportion de mots Tiller retrouves dans Sheets
+        const score=common.length/tWords.length;
+        // Penalite si trop de mots Sheets non retrouves
+        const penalty=(sWords.length-common.length)/sWords.length*0.3;
+        const finalScore=score-penalty;
+        if(finalScore>bestScore&&finalScore>0.45){bestScore=finalScore;best=sp;}
       }
-      if(best){matches.push({tiller:tp,sheets:best,score:Math.round(bestScore*100),selected:true});}
+      if(best){matches.push({tiller:tp,sheets:best,score:Math.round(bestScore*100),selected:bestScore>=0.6});}
     }
 
     setP(100,'Terminé !');
@@ -583,6 +594,8 @@ function renderTiller(matches,tillerProds,sheetsProds,filterCat=''){
   h+=`</div></div>`;
 
   h+=`<div style="overflow-x:auto"><table class="ptb"><thead><tr><th>✓</th><th>Produit Tiller</th><th>→ Produit Sheets</th><th>Prix Vente TTC</th><th>Confiance</th></tr></thead><tbody>`;
+  // Stocker le filtre actif
+  window.current_cat=filterCat;
   filtered.forEach(m=>{
     const i=matches.indexOf(m);
     const conf=m.score>=70?'mok':m.score>=50?'mw':'cl2';
