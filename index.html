@@ -524,7 +524,7 @@ async function processTiller(f){
     const iBarcode=headers.indexOf('Barcode');
     const tillerProds=lines.slice(1).map(l=>{
       const cols=l.split(';');
-      return{sku:cols[iSKU]||'',name:(cols[iName]||'').replace(/"/g,'').trim(),price:(cols[iPrice]||'').replace(',','.'),cost:(cols[iCost]||'').replace(',','.'),tax:(cols[iTax]||'').replace(',','.'),cat:cols[iCat]||'',barcode:cols[iBarcode]||''};
+      const fixNum=s=>(s||'').replace(/"/g,'').replace(',','.');return{sku:cols[iSKU]||'',name:(cols[iName]||'').replace(/"/g,'').trim(),price:fixNum(cols[iPrice]),cost:fixNum(cols[iCost]),tax:fixNum(cols[iTax]),cat:cols[iCat]||'',barcode:cols[iBarcode]||''};
     }).filter(p=>p.name);
 
     setP(50,'Lecture Produits & Marges...');
@@ -645,7 +645,7 @@ async function applyTiller(){
     // Écrire par batch
     const res=await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+'/values:batchUpdate',{
       method:'POST',headers:{Authorization:'Bearer '+tok,'Content-Type':'application/json'},
-      body:JSON.stringify({valueInputOption:'USER_ENTERED',data:requests.map(r=>({range:r.range,values:r.values}))})
+      body:JSON.stringify({valueInputOption:'RAW',data:requests.map(r=>({range:r.range,values:[[parseFloat(r.values[0][0])||r.values[0][0]]]}))})
     });
     const rd=await res.json();
     if(rd.error)throw new Error(rd.error.message);
