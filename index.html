@@ -557,6 +557,8 @@ async function processTiller(f){
 
 function renderTiller(matches,tillerProds,sheetsProds,filterCat=''){
   window.matches_data=matches;
+  if(tillerProds)window.tiller_prods=tillerProds;
+  if(sheetsProds)window.sheets_prods=sheetsProds;
   const body=document.getElementById('p8b');
 
   // Categories disponibles
@@ -568,7 +570,7 @@ function renderTiller(matches,tillerProds,sheetsProds,filterCat=''){
   h+=`<div class="al ai2" style="margin:0;flex:1">✅ <strong>${nbMatch} correspondances</strong> sur ${filtered.length} produits affichés</div>`;
   h+=`<div style="display:flex;align-items:center;gap:.5rem">`;
   h+=`<span style="font-size:.8rem;font-weight:600;color:#666">Catégorie :</span>`;
-  h+=`<select onchange="renderTiller(window.matches_data,null,null,this.value)" style="padding:.4rem .75rem;border:1px solid var(--gris-m);border-radius:6px;font-size:.85rem;cursor:pointer">`;
+  h+=`<select onchange="renderTiller(window.matches_data,window.tiller_prods,window.sheets_prods,this.value)" style="padding:.4rem .75rem;border:1px solid var(--gris-m);border-radius:6px;font-size:.85rem;cursor:pointer">`;
   h+=`<option value="">Toutes (${matches.length})</option>`;
   cats.forEach(c=>{
     const n=matches.filter(m=>m.tiller.cat===c).length;
@@ -603,13 +605,8 @@ function renderTiller(matches,tillerProds,sheetsProds,filterCat=''){
 function toggleAll(val,filterCat){
   const matches=window.matches_data;
   const filtered=filterCat?matches.filter(m=>m.tiller.cat===filterCat):matches;
-  filtered.forEach(m=>{
-    const i=matches.indexOf(m);
-    m.selected=val;
-    const cb=document.getElementById('cb'+i);
-    if(cb)cb.checked=val;
-  });
-  renderTiller(matches,null,null,filterCat);
+  filtered.forEach(m=>m.selected=val);
+  renderTiller(matches,window.tiller_prods,window.sheets_prods,filterCat);
 }
 
 async function applyTiller(){
