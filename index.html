@@ -570,15 +570,16 @@ function renderTiller(matches,tillerProds,sheetsProds,filterCat=''){
   h+=`<div class="al ai2" style="margin:0;flex:1">✅ <strong>${nbMatch} correspondances</strong> sur ${filtered.length} produits affichés</div>`;
   h+=`<div style="display:flex;align-items:center;gap:.5rem">`;
   h+=`<span style="font-size:.8rem;font-weight:600;color:#666">Catégorie :</span>`;
-  h+=`<select onchange="renderTiller(window.matches_data,window.tiller_prods,window.sheets_prods,this.value)" style="padding:.4rem .75rem;border:1px solid var(--gris-m);border-radius:6px;font-size:.85rem;cursor:pointer">`;
+  h+=`<select id="catFilter" style="padding:.4rem .75rem;border:1px solid var(--gris-m);border-radius:6px;font-size:.85rem;cursor:pointer">`;
   h+=`<option value="">Toutes (${matches.length})</option>`;
   cats.forEach(c=>{
     const n=matches.filter(m=>m.tiller.cat===c).length;
     h+=`<option value="${c}" ${filterCat===c?'selected':''}>${c} (${n})</option>`;
   });
   h+=`</select>`;
-  h+=`<button onclick="toggleAll(true,'${filterCat}')" style="background:var(--vert-l);border:none;padding:.3rem .75rem;border-radius:6px;font-size:.75rem;cursor:pointer;font-weight:600">✓ Tout</button>`;
-  h+=`<button onclick="toggleAll(false,'${filterCat}')" style="background:var(--rouge-l);border:none;padding:.3rem .75rem;border-radius:6px;font-size:.75rem;cursor:pointer;font-weight:600">✗ Aucun</button>`;
+  h+=`<button onclick="filtrerCat()" style="background:var(--vert);color:#fff;border:none;padding:.3rem .75rem;border-radius:6px;font-size:.75rem;cursor:pointer;font-weight:600">Filtrer</button>`;
+  h+=`<button onclick="toggleAll(true)" style="background:var(--vert-l);border:none;padding:.3rem .75rem;border-radius:6px;font-size:.75rem;cursor:pointer;font-weight:600">✓ Tout</button>`;
+  h+=`<button onclick="toggleAll(false)" style="background:var(--rouge-l);border:none;padding:.3rem .75rem;border-radius:6px;font-size:.75rem;cursor:pointer;font-weight:600">✗ Aucun</button>`;
   h+=`</div></div>`;
 
   h+=`<div style="overflow-x:auto"><table class="ptb"><thead><tr><th>✓</th><th>Produit Tiller</th><th>→ Produit Sheets</th><th>Prix Vente TTC</th><th>Confiance</th></tr></thead><tbody>`;
@@ -602,11 +603,19 @@ function renderTiller(matches,tillerProds,sheetsProds,filterCat=''){
   document.getElementById('panel-8').classList.add('active');
 }
 
-function toggleAll(val,filterCat){
+function filtrerCat(){
+  const sel=document.getElementById('catFilter');
+  const cat=sel?sel.value:'';
+  window.current_cat=cat;
+  renderTiller(window.matches_data,window.tiller_prods,window.sheets_prods,cat);
+}
+
+function toggleAll(val){
+  const cat=window.current_cat||'';
   const matches=window.matches_data;
-  const filtered=filterCat?matches.filter(m=>m.tiller.cat===filterCat):matches;
+  const filtered=cat?matches.filter(m=>m.tiller.cat===cat):matches;
   filtered.forEach(m=>m.selected=val);
-  renderTiller(matches,window.tiller_prods,window.sheets_prods,filterCat);
+  renderTiller(matches,window.tiller_prods,window.sheets_prods,cat);
 }
 
 async function applyTiller(){
