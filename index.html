@@ -433,6 +433,8 @@ function rl(ls){
 
 async function imp(){
   if(!tok){alert('Veuillez vous connecter à Google.');goStep(1);return;}
+  // Capturer le nom fournisseur AVANT de changer d'etape
+  const _fournisseur=v('ff')||v('bf')||v('af')||data.fournisseur_nom||'';
   goStep(6);
   const sn=TABS[data.type];
   let row;
@@ -504,7 +506,7 @@ async function autoSaveProduits(d){
     const rd=await r.json();
     const rows=rd.values||[];
     const existants=new Set(rows.map(row=>(row[0]||'').toString().toUpperCase()));
-    const fournisseur=(document.getElementById('ff')||document.getElementById('bf')||{value:''}).value||d.fournisseur_nom||'';
+    const fournisseur=window._lastFournisseur||d.fournisseur_nom||'';
     const tvaVal=(d.tva&&d.total_ht&&d.total_ht>0)?Math.round(d.tva/d.total_ht*100)+'%':'5,5%';
     const nouveaux=[];
     for(const l of (d.lignes||[])){
@@ -515,23 +517,29 @@ async function autoSaveProduits(d){
     }
     if(nouveaux.length===0)return;
     const lastRow=rows.length+4;
-    const wr=await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+'/values/'+encodeURIComponent('🔧 Produits & Marges!A'+lastRow)+'?valueInputOption=USER_ENTERED',{method:'PUT',headers:{Authorization:'Bearer '+tok,'Content-Type':'application/json'},body:JSON.stringify({values:nouveaux})});
+    // Ecrire les donnees avec formules directement
+    const nouveauxAvecFormules=nouveaux.map((row,i)=>{
+      const r=lastRow+i;
+      return [
+        row[0],row[1],row[2],row[3],row[4],
+        row[5],row[6],
+        '=SI(F'+r+'="";"";F'+r+'/(1+G'+r+'))',
+        '=SI(H'+r+'="";"";H'+r+'-E'+r+')',
+        '=SI(OU(I'+r+'="";E'+r+'=0);"";I'+r+'/E'+r+')',
+        '=SI(OU(I'+r+'="";H'+r+'=0);"";I'+r+'/H'+r+')',
+        row[11],row[12],row[13]
+      ];
+    });
+    const wr=await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+'/values/'+encodeURIComponent('🔧 Produits & Marges!A'+lastRow)+'?valueInputOption=USER_ENTERED',{method:'PUT',headers:{Authorization:'Bearer '+tok,'Content-Type':'application/json'},body:JSON.stringify({values:nouveauxAvecFormules})});
     const wrd=await wr.json();
     if(wrd.error){console.error('write error:',wrd.error);return;}
-    // Copier le format de la derniere ligne existante
+    // Copier uniquement le FORMAT
     const si=await(await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+'?fields=sheets.properties',{headers:{Authorization:'Bearer '+tok}})).json();
     const sheet=si.sheets.find(s=>s.properties.title==='🔧 Produits & Marges');
     if(sheet){
       const sid=sheet.properties.sheetId;
       const srcRow=lastRow-2;
-      // Copier format ET formules
-      const reqs=[];
-      for(let i=0;i<nouveaux.length;i++){
-        // Format (couleurs, bordures)
-        reqs.push({copyPaste:{source:{sheetId:sid,startRowIndex:srcRow,endRowIndex:srcRow+1,startColumnIndex:0,endColumnIndex:14},destination:{sheetId:sid,startRowIndex:lastRow-1+i,endRowIndex:lastRow+i,startColumnIndex:0,endColumnIndex:14},pasteType:'PASTE_FORMAT'}});
-        // Formules colonnes H a K (index 7 a 10)
-        reqs.push({copyPaste:{source:{sheetId:sid,startRowIndex:srcRow,endRowIndex:srcRow+1,startColumnIndex:7,endColumnIndex:12},destination:{sheetId:sid,startRowIndex:lastRow-1+i,endRowIndex:lastRow+i,startColumnIndex:7,endColumnIndex:12},pasteType:'PASTE_FORMULA'}});
-      }
+      const reqs=nouveaux.map((_,i)=>({copyPaste:{source:{sheetId:sid,startRowIndex:srcRow,endRowIndex:srcRow+1,startColumnIndex:0,endColumnIndex:14},destination:{sheetId:sid,startRowIndex:lastRow-1+i,endRowIndex:lastRow+i,startColumnIndex:0,endColumnIndex:14},pasteType:'PASTE_FORMAT'}}));
       await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+':batchUpdate',{method:'POST',headers:{Authorization:'Bearer '+tok,'Content-Type':'application/json'},body:JSON.stringify({requests:reqs})});
     }
     console.log(nouveaux.length+' produit(s) ajoute(s)');
