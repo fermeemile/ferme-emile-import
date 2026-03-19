@@ -191,6 +191,7 @@ header{background:var(--vert);padding:0 2rem;display:flex;align-items:center;jus
         <div class="dtc" onclick="selType('bl',this)"><span class="dti">📦</span><div class="dtl">Bon de Livraison</div><div class="dtd">BL, bordereau de livraison</div></div>
         <div class="dtc" onclick="selType('avoir',this)"><span class="dti">↩️</span><div class="dtl">Avoir / Crédit</div><div class="dtd">Note de crédit, avoir fournisseur</div></div>
         <div class="dtc" onclick="selType('fournisseur',this)"><span class="dti">🏭</span><div class="dtl">Fiche Fournisseur</div><div class="dtd">Tarif ou fiche contact</div></div>
+        <div class="dtc" onclick="selType('tiller',this)" style="border-color:var(--bleu);background:#e3f2fd"><span class="dti">🏪</span><div class="dtl" style="color:var(--bleu)">Import Caisse</div><div class="dtd">Mise à jour prix vente depuis Tiller CSV</div></div>
       </div>
     </div>
   </div>
@@ -205,7 +206,7 @@ header{background:var(--vert);padding:0 2rem;display:flex;align-items:center;jus
         <div class="dzs">ou cliquez pour sélectionner</div>
         <div class="dzf"><span class="fb">PDF</span><span class="fb">JPG</span><span class="fb">PNG</span><span class="fb">WEBP</span></div>
         <button class="bup" onclick="document.getElementById('fi').click()">📂 Choisir un fichier</button>
-        <input type="file" id="fi" accept=".pdf,.jpg,.jpeg,.png,.webp" onchange="hf(event)">
+        <input type="file" id="fi" accept=".pdf,.jpg,.jpeg,.png,.webp,.csv" onchange="hf(event)">
       </div>
       <div class="br"><button class="btn bs" onclick="goStep(2)">← Retour</button></div>
     </div>
@@ -250,6 +251,12 @@ header{background:var(--vert);padding:0 2rem;display:flex;align-items:center;jus
         </div>
       </div>
     </div>
+  </div>
+
+  <!-- 8 TILLER VERIFICATION -->
+  <div class="panel" id="panel-8">
+    <div class="ph" style="background:linear-gradient(135deg,var(--bleu),#1976d2)"><div class="pt">🏪 Import Caisse — Vérifiez les correspondances</div><div class="ps">Validez chaque correspondance avant mise à jour</div></div>
+    <div class="pb" id="p8b"></div>
   </div>
 
   <div class="hs" id="hsec" style="display:none">
@@ -310,6 +317,7 @@ function goStep(n){
     if(i<n)e.classList.add('done');
     else if(i===n)e.classList.add('active');
   }
+  if(n===8){document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.getElementById('panel-8').classList.add('active');return;}
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
@@ -317,7 +325,7 @@ function selType(t,el){
   dtype=t;
   document.querySelectorAll('.dtc').forEach(c=>c.classList.remove('sel'));
   el.classList.add('sel');
-  const tl={facture:'🧾 Facture',bl:'📦 Bon de Livraison',avoir:'↩️ Avoir',fournisseur:'🏭 Fiche Fournisseur'};
+  const tl={facture:'🧾 Facture',bl:'📦 Bon de Livraison',avoir:'↩️ Avoir',fournisseur:'🏭 Fiche Fournisseur',tiller:'🏪 Import Caisse Tiller'};
   document.getElementById('p3t').textContent=tl[t]+' — Déposer le document';
   setTimeout(()=>goStep(3),300);
 }
@@ -329,7 +337,7 @@ function dv(e,t){
   else if(t==='l')dz.classList.remove('over');
   else{dz.classList.remove('over');if(e.dataTransfer.files[0])pf(e.dataTransfer.files[0]);}
 }
-function hf(e){if(e.target.files[0])pf(e.target.files[0]);}
+function hf(e){if(e.target.files[0]){if(dtype==='tiller')processTiller(e.target.files[0]);else pf(e.target.files[0]);}}
 
 async function loadFournisseurs(){
   try{
@@ -498,6 +506,133 @@ async function imp(){
     const p5=document.getElementById('p5b');
     p5.insertBefore(eb,p5.firstChild);
   }
+}
+
+async function processTiller(f){
+  goStep(4);setP(10,'Lecture du fichier CSV...');
+  try{
+    const txt=await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsText(f,'UTF-8');});
+    setP(30,'Analyse des produits caisse...');
+    const lines=txt.split(/\r?\n/).filter(l=>l.trim());
+    const headers=lines[0].split(';');
+    const iSKU=headers.indexOf('SKU');
+    const iName=headers.indexOf('Name');
+    const iPrice=headers.indexOf('Price');
+    const iCost=headers.indexOf('Cost');
+    const iTax=headers.indexOf('Tax');
+    const iCat=headers.indexOf('CategoryName');
+    const iBarcode=headers.indexOf('Barcode');
+    const tillerProds=lines.slice(1).map(l=>{
+      const cols=l.split(';');
+      return{sku:cols[iSKU]||'',name:(cols[iName]||'').replace(/"/g,'').trim(),price:(cols[iPrice]||'').replace(',','.'),cost:(cols[iCost]||'').replace(',','.'),tax:(cols[iTax]||'').replace(',','.'),cat:cols[iCat]||'',barcode:cols[iBarcode]||''};
+    }).filter(p=>p.name);
+
+    setP(50,'Lecture Produits & Marges...');
+    const r=await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+'/values/'+encodeURIComponent('🔧 Produits & Marges!A4:F200'),{headers:{Authorization:'Bearer '+tok}});
+    const rd=await r.json();
+    const sheetsProds=(rd.values||[]).map((row,i)=>({row:i+4,code:row[0]||'',nom:row[1]||'',prixVente:row[5]||''})).filter(p=>p.code||p.nom);
+
+    setP(70,'Rapprochement par designation...');
+    // Rapprochement simple par mots-clés
+    const matches=[];
+    for(const tp of tillerProds){
+      const tName=tp.name.toUpperCase();
+      let best=null;let bestScore=0;
+      for(const sp of sheetsProds){
+        const sName=sp.nom.toUpperCase();
+        // Score basé sur mots communs
+        const tWords=tName.split(/[\s\-\/]+/).filter(w=>w.length>2);
+        const sWords=sName.split(/[\s\-\/]+/).filter(w=>w.length>2);
+        const common=tWords.filter(w=>sWords.some(sw=>sw.includes(w)||w.includes(sw)));
+        const score=common.length/(Math.max(tWords.length,sWords.length)||1);
+        if(score>bestScore&&score>0.3){bestScore=score;best=sp;}
+      }
+      if(best){matches.push({tiller:tp,sheets:best,score:Math.round(bestScore*100),selected:true});}
+    }
+
+    setP(100,'Terminé !');
+    setTimeout(()=>renderTiller(matches,tillerProds,sheetsProds),500);
+  }catch(err){console.error(err);alert('Erreur: '+err.message);}
+}
+
+function renderTiller(matches,tillerProds,sheetsProds,filterCat=''){
+  window.matches_data=matches;
+  const body=document.getElementById('p8b');
+
+  // Categories disponibles
+  const cats=[...new Set(matches.map(m=>m.tiller.cat))].sort();
+  const filtered=filterCat?matches.filter(m=>m.tiller.cat===filterCat):matches;
+  const nbMatch=filtered.filter(m=>m.selected).length;
+
+  let h=`<div style="margin-bottom:1rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap">`;
+  h+=`<div class="al ai2" style="margin:0;flex:1">✅ <strong>${nbMatch} correspondances</strong> sur ${filtered.length} produits affichés</div>`;
+  h+=`<div style="display:flex;align-items:center;gap:.5rem">`;
+  h+=`<span style="font-size:.8rem;font-weight:600;color:#666">Catégorie :</span>`;
+  h+=`<select onchange="renderTiller(window.matches_data,null,null,this.value)" style="padding:.4rem .75rem;border:1px solid var(--gris-m);border-radius:6px;font-size:.85rem;cursor:pointer">`;
+  h+=`<option value="">Toutes (${matches.length})</option>`;
+  cats.forEach(c=>{
+    const n=matches.filter(m=>m.tiller.cat===c).length;
+    h+=`<option value="${c}" ${filterCat===c?'selected':''}>${c} (${n})</option>`;
+  });
+  h+=`</select>`;
+  h+=`<button onclick="toggleAll(true,'${filterCat}')" style="background:var(--vert-l);border:none;padding:.3rem .75rem;border-radius:6px;font-size:.75rem;cursor:pointer;font-weight:600">✓ Tout</button>`;
+  h+=`<button onclick="toggleAll(false,'${filterCat}')" style="background:var(--rouge-l);border:none;padding:.3rem .75rem;border-radius:6px;font-size:.75rem;cursor:pointer;font-weight:600">✗ Aucun</button>`;
+  h+=`</div></div>`;
+
+  h+=`<div style="overflow-x:auto"><table class="ptb"><thead><tr><th>✓</th><th>Produit Tiller</th><th>→ Produit Sheets</th><th>Prix Vente TTC</th><th>Confiance</th></tr></thead><tbody>`;
+  filtered.forEach(m=>{
+    const i=matches.indexOf(m);
+    const conf=m.score>=70?'mok':m.score>=50?'mw':'cl2';
+    h+=`<tr id="row${i}"><td><input type="checkbox" id="cb${i}" ${m.selected?'checked':''} onchange="matches_data[${i}].selected=this.checked"></td>`;
+    h+=`<td style="font-size:.8rem">${m.tiller.name}<br><span style="color:#999;font-size:.7rem">${m.tiller.cat}</span></td>`;
+    h+=`<td style="font-size:.8rem">${m.sheets.code}<br><span style="color:#666">${m.sheets.nom}</span></td>`;
+    h+=`<td><input class="ti" id="tp${i}" value="${m.tiller.price}" style="width:80px;text-align:right;border:1px solid #ddd;border-radius:4px;padding:2px 6px"></td>`;
+    h+=`<td><span class="mb ${conf}">${m.score}%</span></td></tr>`;
+  });
+  h+=`</tbody></table></div>`;
+  h+=`<div class="br" style="margin-top:1.5rem">`;
+  h+=`<button class="btn bs" onclick="goStep(2)">← Retour</button>`;
+  h+=`<button class="btn bsuc" onclick="applyTiller()">📊 Mettre à jour (${matches.filter(m=>m.selected).length} produits) →</button>`;
+  h+=`</div>`;
+  body.innerHTML=h;
+
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('panel-8').classList.add('active');
+}
+
+function toggleAll(val,filterCat){
+  const matches=window.matches_data;
+  const filtered=filterCat?matches.filter(m=>m.tiller.cat===filterCat):matches;
+  filtered.forEach(m=>{
+    const i=matches.indexOf(m);
+    m.selected=val;
+    const cb=document.getElementById('cb'+i);
+    if(cb)cb.checked=val;
+  });
+  renderTiller(matches,null,null,filterCat);
+}
+
+async function applyTiller(){
+  if(!tok){alert('Connectez-vous à Google.');return;}
+  const selected=window.matches_data.filter(m=>m.selected);
+  if(!selected.length){alert('Aucune correspondance sélectionnée.');return;}
+  goStep(6);document.getElementById('isub').textContent='Mise à jour des prix...';
+  try{
+    const requests=selected.map((m,i)=>{
+      const price=document.getElementById('tp'+window.matches_data.indexOf(m));
+      const val=price?price.value:m.tiller.price;
+      return{range:'🔧 Produits & Marges!F'+(m.sheets.row),values:[[val]]};
+    });
+    // Écrire par batch
+    const res=await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+'/values:batchUpdate',{
+      method:'POST',headers:{Authorization:'Bearer '+tok,'Content-Type':'application/json'},
+      body:JSON.stringify({valueInputOption:'USER_ENTERED',data:requests.map(r=>({range:r.range,values:r.values}))})
+    });
+    const rd=await res.json();
+    if(rd.error)throw new Error(rd.error.message);
+    document.getElementById('sdet').innerHTML=`<div class="ss"><div class="ssn">${selected.length}</div><div class="ssl">Prix mis à jour</div></div><div class="ss"><div class="ssn">Produits & Marges</div><div class="ssl">Onglet mis à jour</div></div>`;
+    goStep(7);
+  }catch(err){console.error(err);alert('Erreur: '+err.message);goStep(8);}
 }
 
 async function autoSaveProduits(d){
