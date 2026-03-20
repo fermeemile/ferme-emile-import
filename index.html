@@ -137,136 +137,136 @@ header{background:var(--vert);padding:0 2rem;display:flex;align-items:center;jus
 </head>
 <body>
 <header>
-  <div class="logo">
-    <div class="logo-icon">🌿</div>
-    <div><div class="logo-text">La Ferme d'Emile</div><div class="logo-sub">Import automatique IA</div></div>
-  </div>
-  <div class="header-right">
-    <div class="google-status"><div class="gdot" id="gdot"></div><span id="gst">Non connecté</span></div>
-    <div class="badge">✨ Claude AI</div>
-  </div>
+<div class="logo">
+<div class="logo-icon">🌿</div>
+<div><div class="logo-text">La Ferme d'Emile</div><div class="logo-sub">Import automatique IA</div></div>
+</div>
+<div class="header-right">
+<div class="google-status"><div class="gdot" id="gdot"></div><span id="gst">Non connecté</span></div>
+<div class="badge">✨ Claude AI</div>
+</div>
 </header>
-
 <div class="container">
-  <div class="steps">
-    <div class="step active" id="step-1"><span class="sn">1</span><span>Connexion</span></div><span class="sa">›</span>
-    <div class="step" id="step-2"><span class="sn">2</span><span>Type</span></div><span class="sa">›</span>
-    <div class="step" id="step-3"><span class="sn">3</span><span>Document</span></div><span class="sa">›</span>
-    <div class="step" id="step-4"><span class="sn">4</span><span>Analyse</span></div><span class="sa">›</span>
-    <div class="step" id="step-5"><span class="sn">5</span><span>Vérifier</span></div><span class="sa">›</span>
-    <div class="step" id="step-6"><span class="sn">6</span><span>Importer</span></div>
-  </div>
+<div class="steps">
+<div class="step active" id="step-1"><span class="sn">1</span><span>Connexion</span></div><span class="sa">›</span>
+<div class="step" id="step-2"><span class="sn">2</span><span>Type</span></div><span class="sa">›</span>
+<div class="step" id="step-3"><span class="sn">3</span><span>Document</span></div><span class="sa">›</span>
+<div class="step" id="step-4"><span class="sn">4</span><span>Analyse</span></div><span class="sa">›</span>
+<div class="step" id="step-5"><span class="sn">5</span><span>Vérifier</span></div><span class="sa">›</span>
+<div class="step" id="step-6"><span class="sn">6</span><span>Importer</span></div>
+</div>
 
-  <!-- 1 AUTH -->
-  <div class="panel active" id="panel-1">
-    <div class="ph"><div class="pt">Connexion Google Sheets</div><div class="ps">Autorisez l'accès à votre fichier une seule fois</div></div>
-    <div class="pb">
-      <div class="auth-box">
-        <span class="ai">🔐</span>
-        <div class="at">Connectez votre Google Drive</div>
-        <div class="as">L'outil va importer directement dans votre fichier<br><strong>FermeEmile_GestionComplète_v3</strong><br><br>Connectez-vous avec <strong>lafermedemilecollonges@gmail.com</strong></div>
-        <div style="margin-bottom:1.5rem;text-align:left;max-width:480px;margin-left:auto;margin-right:auto">
-          <div class="fl" style="margin-bottom:.5rem">🔑 Clé API Claude (stockée sur votre Mac uniquement)</div>
-          <div style="display:flex;gap:.5rem">
-            <input type="password" id="apikey" placeholder="sk-ant-api03-..." style="flex:1;padding:.75rem 1rem;border:2px solid var(--gris-m);border-radius:8px;font-family:DM Mono,monospace;font-size:.85rem;outline:none" value="" />
-            <button onclick="saveKey()" style="background:var(--vert);color:#fff;border:none;padding:.75rem 1rem;border-radius:8px;font-weight:600;cursor:pointer;white-space:nowrap">💾 Sauver</button>
-          </div>
-          <div style="font-size:.75rem;color:#888;margin-top:.4rem">Saisie une seule fois, mémorisée sur votre appareil.</div>
-        </div>
-        <button class="btn-g" onclick="signIn()">
-          <svg width="20" height="20" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-          Se connecter avec Google
-        </button>
-        <div style="margin-top:1.5rem"><div class="al ai2">🔒 <span>Accès limité à votre fichier Google Sheets uniquement.</span></div></div>
-      </div>
-    </div>
-  </div>
+<!-- 1 AUTH -->
+<div class="panel active" id="panel-1">
+<div class="ph"><div class="pt">Connexion Google Sheets</div><div class="ps">Autorisez l'accès à votre fichier une seule fois</div></div>
+<div class="pb">
+<div class="auth-box">
+<span class="ai">🔐</span>
+<div class="at">Connectez votre Google Drive</div>
+<div class="as">L'outil va importer directement dans votre fichier<br><strong>FermeEmile_GestionComplète_v3</strong><br><br>Connectez-vous avec <strong>lafermedemilecollonges@gmail.com</strong></div>
+<div style="margin-bottom:1.5rem;text-align:left;max-width:480px;margin-left:auto;margin-right:auto">
+<div class="fl" style="margin-bottom:.5rem">🔑 Clé API Claude (stockée sur votre Mac uniquement)</div>
+<div style="display:flex;gap:.5rem">
+<input type="password" id="apikey" placeholder="sk-ant-api03-..." style="flex:1;padding:.75rem 1rem;border:2px solid var(--gris-m);border-radius:8px;font-family:DM Mono,monospace;font-size:.85rem;outline:none" value="" />
+<button onclick="saveKey()" style="background:var(--vert);color:#fff;border:none;padding:.75rem 1rem;border-radius:8px;font-weight:600;cursor:pointer;white-space:nowrap">💾 Sauver</button>
+</div>
+<div style="font-size:.75rem;color:#888;margin-top:.4rem">Saisie une seule fois, mémorisée sur votre appareil.</div>
+</div>
+<button class="btn-g" onclick="signIn()">
+<svg width="20" height="20" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+Se connecter avec Google
+</button>
+<div style="margin-top:1.5rem"><div class="al ai2">🔒 <span>Accès limité à votre fichier Google Sheets uniquement.</span></div></div>
+</div>
+</div>
+</div>
 
-  <!-- 2 TYPE -->
-  <div class="panel" id="panel-2">
-    <div class="ph"><div class="pt">Quel type de document ?</div><div class="ps">Choisissez pour que l'IA sache quoi extraire</div></div>
-    <div class="pb">
-      <div class="dtg">
-        <div class="dtc" onclick="selType('facture',this)"><span class="dti">🧾</span><div class="dtl">Facture</div><div class="dtd">Facture fournisseur avec lignes produits</div></div>
-        <div class="dtc" onclick="selType('bl',this)"><span class="dti">📦</span><div class="dtl">Bon de Livraison</div><div class="dtd">BL, bordereau de livraison</div></div>
-        <div class="dtc" onclick="selType('avoir',this)"><span class="dti">↩️</span><div class="dtl">Avoir / Crédit</div><div class="dtd">Note de crédit, avoir fournisseur</div></div>
-        <div class="dtc" onclick="selType('fournisseur',this)"><span class="dti">🏭</span><div class="dtl">Fiche Fournisseur</div><div class="dtd">Tarif ou fiche contact</div></div>
-        <div class="dtc" onclick="selType('tiller',this)" style="border-color:var(--bleu);background:#e3f2fd"><span class="dti">🏪</span><div class="dtl" style="color:var(--bleu)">Import Caisse</div><div class="dtd">Mise à jour prix vente depuis Tiller CSV</div></div>
-      </div>
-    </div>
-  </div>
+<!-- 2 TYPE -->
+<div class="panel" id="panel-2">
+<div class="ph"><div class="pt">Quel type de document ?</div><div class="ps">Choisissez pour que l'IA sache quoi extraire</div></div>
+<div class="pb">
+<div class="dtg">
+<div class="dtc" onclick="selType('facture',this)"><span class="dti">🧾</span><div class="dtl">Facture</div><div class="dtd">Facture fournisseur avec lignes produits</div></div>
+<div class="dtc" onclick="selType('bl',this)"><span class="dti">📦</span><div class="dtl">Bon de Livraison</div><div class="dtd">BL, bordereau de livraison</div></div>
+<div class="dtc" onclick="selType('avoir',this)"><span class="dti">↩️</span><div class="dtl">Avoir / Crédit</div><div class="dtd">Note de crédit, avoir fournisseur</div></div>
+<div class="dtc" onclick="selType('fournisseur',this)"><span class="dti">🏭</span><div class="dtl">Fiche Fournisseur</div><div class="dtd">Tarif ou fiche contact</div></div>
+<div class="dtc" onclick="selType('tiller',this)" style="border-color:var(--bleu);background:#e3f2fd"><span class="dti">🏪</span><div class="dtl" style="color:var(--bleu)">Import Caisse</div><div class="dtd">Mise à jour prix vente depuis Tiller CSV</div></div>
+</div>
+</div>
+</div>
 
-  <!-- 3 UPLOAD -->
-  <div class="panel" id="panel-3">
-    <div class="ph"><div class="pt" id="p3t">📄 Déposer votre document</div><div class="ps">PDF, photo JPG/PNG — jusqu'à 20 Mo</div></div>
-    <div class="pb">
-      <div class="dz" id="dz" ondragover="dv(event,'o')" ondragleave="dv(event,'l')" ondrop="dv(event,'d')">
-        <span class="dzi">📄</span>
-        <div class="dzt">Glissez votre document ici</div>
-        <div class="dzs">ou cliquez pour sélectionner</div>
-        <div class="dzf"><span class="fb">PDF</span><span class="fb">JPG</span><span class="fb">PNG</span><span class="fb">WEBP</span></div>
-        <button class="bup" onclick="document.getElementById('fi').click()">📂 Choisir un fichier</button>
-        <input type="file" id="fi" accept=".pdf,.jpg,.jpeg,.png,.webp,.csv" onchange="hf(event)">
-      </div>
-      <div class="br"><button class="btn bs" onclick="goStep(2)">← Retour</button></div>
-    </div>
-  </div>
+<!-- 3 UPLOAD -->
+<div class="panel" id="panel-3">
+<div class="ph"><div class="pt" id="p3t">📄 Déposer votre document</div><div class="ps">PDF, photo JPG/PNG — jusqu'à 20 Mo</div></div>
+<div class="pb">
+<div class="dz" id="dz" ondragover="dv(event,'o')" ondragleave="dv(event,'l')" ondrop="dv(event,'d')">
+<span class="dzi">📄</span>
+<div class="dzt">Glissez votre document ici</div>
+<div class="dzs">ou cliquez pour sélectionner</div>
+<div class="dzf"><span class="fb">PDF</span><span class="fb">JPG</span><span class="fb">PNG</span><span class="fb">WEBP</span></div>
+<button class="bup" onclick="document.getElementById('fi').click()">📂 Choisir un fichier</button>
+<input type="file" id="fi" accept=".pdf,.jpg,.jpeg,.png,.webp,.csv" onchange="hf(event)">
+</div>
+<div class="br"><button class="btn bs" onclick="goStep(2)">← Retour</button></div>
+</div>
+</div>
 
-  <!-- 4 ANALYSE -->
-  <div class="panel" id="panel-4">
-    <div class="ph"><div class="pt">🔍 Analyse en cours…</div><div class="ps">L'IA lit et extrait les données</div></div>
-    <div class="pb">
-      <div class="ast"><div class="sp"></div><span id="amsg">Lecture…</span></div>
-      <div class="pbw"><div class="pb2" id="pbar"></div></div>
-      <div class="ptx" id="ptx">0%</div>
-    </div>
-  </div>
+<!-- 4 ANALYSE -->
+<div class="panel" id="panel-4">
+<div class="ph"><div class="pt">🔍 Analyse en cours…</div><div class="ps">L'IA lit et extrait les données</div></div>
+<div class="pb">
+<div class="ast"><div class="sp"></div><span id="amsg">Lecture…</span></div>
+<div class="pbw"><div class="pb2" id="pbar"></div></div>
+<div class="ptx" id="ptx">0%</div>
+</div>
+</div>
 
-  <!-- 5 RÉSULTATS -->
-  <div class="panel" id="panel-5">
-    <div class="ph"><div class="pt">✅ Données extraites — Vérifiez</div><div class="ps">Tous les champs sont éditables</div></div>
-    <div class="pb" id="p5b"></div>
-  </div>
+<!-- 5 RÉSULTATS -->
+<div class="panel" id="panel-5">
+<div class="ph"><div class="pt">✅ Données extraites — Vérifiez</div><div class="ps">Tous les champs sont éditables</div></div>
+<div class="pb" id="p5b"></div>
+</div>
 
-  <!-- 6 IMPORT EN COURS -->
-  <div class="panel" id="panel-6">
-    <div class="ph"><div class="pt">📊 Import dans Google Sheets…</div><div class="ps">Écriture directe dans votre fichier</div></div>
-    <div class="pb">
-      <div class="ims"><span class="ima">📊</span><div class="imt">Import en cours…</div><div class="ptx" id="isub" style="text-align:center;font-size:.9rem">Connexion…</div></div>
-    </div>
-  </div>
+<!-- 6 IMPORT EN COURS -->
+<div class="panel" id="panel-6">
+<div class="ph"><div class="pt">📊 Import dans Google Sheets…</div><div class="ps">Écriture directe dans votre fichier</div></div>
+<div class="pb">
+<div class="ims"><span class="ima">📊</span><div class="imt">Import en cours…</div><div class="ptx" id="isub" style="text-align:center;font-size:.9rem">Connexion…</div></div>
+</div>
+</div>
 
-  <!-- 7 SUCCÈS -->
-  <div class="panel" id="panel-7">
-    <div class="pb">
-      <div class="sb">
-        <span class="si">🎉</span>
-        <div class="sti">Importé dans Google Sheets !</div>
-        <div class="ssu">La ligne a été ajoutée directement dans votre fichier.</div>
-        <div class="sd" id="sdet"></div>
-        <a href="https://docs.google.com/spreadsheets/d/1C1VbCbFRr3BUXrhCJlijnnSmhgw5taEkk54RmLD3UcQ/edit" target="_blank" class="sl">📊 Ouvrir Google Sheets →</a><br>
-        <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-top:1rem">
-          <button class="btn bp" onclick="restart()">➕ Nouveau document</button>
-          <button class="btn bs" onclick="showHist()">📋 Historique</button>
-        </div>
-      </div>
-    </div>
-  </div>
+<!-- 7 SUCCÈS -->
+<div class="panel" id="panel-7">
+<div class="pb">
+<div class="sb">
+<span class="si">🎉</span>
+<div class="sti">Importé dans Google Sheets !</div>
+<div class="ssu">La ligne a été ajoutée directement dans votre fichier.</div>
+<div class="sd" id="sdet"></div>
+<a href="https://docs.google.com/spreadsheets/d/1C1VbCbFRr3BUXrhCJlijnnSmhgw5taEkk54RmLD3UcQ/edit" target="_blank" class="sl">📊 Ouvrir Google Sheets →</a><br>
+<div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-top:1rem">
+<button class="btn bp" onclick="restart()">➕ Nouveau document</button>
+<button class="btn bs" onclick="showHist()">📋 Historique</button>
+</div>
+</div>
+</div>
+</div>
 
-  <!-- 8 TILLER VERIFICATION -->
-  <div class="panel" id="panel-8">
-    <div class="ph" style="background:linear-gradient(135deg,var(--bleu),#1976d2)"><div class="pt">🏪 Import Caisse — Vérifiez les correspondances</div><div class="ps">Validez chaque correspondance avant mise à jour</div></div>
-    <div class="pb" id="p8b"></div>
-  </div>
+<!-- 8 TILLER VERIFICATION -->
+<div class="panel" id="panel-8">
+<div class="ph" style="background:linear-gradient(135deg,var(--bleu),#1976d2)"><div class="pt">🏪 Import Caisse — Vérifiez les correspondances</div><div class="ps">Validez chaque correspondance avant mise à jour</div></div>
+<div class="pb" id="p8b"></div>
+</div>
 
-  <div class="hs" id="hsec" style="display:none">
-    <div class="hti">📋 Historique des imports</div>
-    <div class="hl2" id="hlist"></div>
-  </div>
-  <div style="margin-top:2rem;text-align:center;padding-bottom:2rem">
-    <button onclick="activateFilters()" style="background:transparent;border:1px solid #ccc;color:#888;padding:.5rem 1.25rem;border-radius:8px;font-size:.8rem;cursor:pointer">⚙️ Activer les filtres sur Google Sheets</button>
-    <div id="fmsg" style="font-size:.8rem;margin-top:.5rem;color:#666"></div>
-  </div>
+<div class="hs" id="hsec" style="display:none">
+<div class="hti">📋 Historique des imports</div>
+<div class="hl2" id="hlist"></div>
+</div>
+
+<div style="margin-top:2rem;text-align:center;padding-bottom:2rem">
+<button onclick="activateFilters()" style="background:transparent;border:1px solid #ccc;color:#888;padding:.5rem 1.25rem;border-radius:8px;font-size:.8rem;cursor:pointer">⚙️ Activer les filtres sur Google Sheets</button>
+<div id="fmsg" style="font-size:.8rem;margin-top:.5rem;color:#666"></div>
+</div>
 </div>
 
 <script>
@@ -275,7 +275,6 @@ const ANTHROPIC_KEY = localStorage.getItem('fe_apikey')||'';
 const CLIENT_ID = '5490494382-dld6o3m45a5a5o6l1qvm7boh257nv9i8.apps.googleusercontent.com';
 const SCOPES = 'https://www.googleapis.com/auth/spreadsheets';
 const TABS = { facture:'🧾 Factures', bl:'🔍 BL & Rapprochement', avoir:'🧾 Factures', fournisseur:'📋 Fournisseurs' };
-
 let tc, tok=null, dtype=null, file=null, data=null;
 let hist = JSON.parse(localStorage.getItem('feh')||'[]');
 
@@ -302,6 +301,7 @@ function signIn(){
   if(!key||!key.startsWith('sk-')){alert("Veuillez d'abord saisir votre clé API Claude (sk-ant-...)");return;}
   tc.requestAccessToken({prompt:'consent'});
 }
+
 function saveKey(){
   const k=document.getElementById('apikey');
   if(k&&k.value.startsWith('sk-')){localStorage.setItem('fe_apikey',k.value);alert('✅ Clé API sauvegardée !');}
@@ -337,11 +337,11 @@ function dv(e,t){
   else if(t==='l')dz.classList.remove('over');
   else{dz.classList.remove('over');if(e.dataTransfer.files[0])pf(e.dataTransfer.files[0]);}
 }
+
 function hf(e){if(e.target.files[0]){if(dtype==='tiller')processTiller(e.target.files[0]);else pf(e.target.files[0]);}}
 
 async function loadFournisseurs(){
   try{
-    // Renouveler le token si expire
     const test=await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+'/values/A1',{headers:{Authorization:'Bearer '+tok}});
     const td=await test.json();
     if(td.error&&td.error.code===401){
@@ -430,8 +430,11 @@ function fd(label,id,val,hl=false){
 }
 
 function rf(d){return`<div class="rg">${fd('N° Facture','fn',d.numero)}${fd('Fournisseur','ff',d.fournisseur_nom)}${fd('Code Fourn.','fc',d.fournisseur_code)}${fd('Date Facture','fdat',d.date_facture)}${fd('Date Échéance','fech',d.date_echeance,!d.date_echeance)}${fd('N° BL','fbl',d.numero_bl)}${fd('Total HT €','fht',d.total_ht)}${fd('TVA €','ftva',d.tva)}${fd('Total TTC €','fttc',d.total_ttc,true)}${fd('Statut Paiement','fsp','À payer')}${fd('Commentaire','fco',d.commentaire)}</div>${rl(d.lignes)}<div style="margin-top:1rem"><div class="al ai2">→ Onglet : <strong>🧾 Factures</strong></div></div>`;}
+
 function rbl(d){return`<div class="rg">${fd('N° BL','bn',d.numero_bl)}${fd('Fournisseur','bf',d.fournisseur_nom)}${fd('Code Fourn.','bc',d.fournisseur_code)}${fd('Date BL','bdat',d.date_bl)}${fd('Montant HT €','bht',d.montant_ht,true)}${fd('Commentaire','bco',d.commentaire)}</div>${rl(d.lignes)}<div style="margin-top:1rem"><div class="al ai2">→ Onglet : <strong>🔍 BL & Rapprochement</strong></div></div>`;}
+
 function rav(d){return`<div class="rg">${fd('N° Avoir','an',d.numero)}${fd('Fournisseur','af',d.fournisseur_nom)}${fd('Code Fourn.','ac',d.fournisseur_code)}${fd('Date','adat',d.date)}${fd('Facture liée','al2',d.facture_liee)}${fd('Montant HT €','aht',-(d.montant_ht||0))}${fd('TVA €','atva',-(d.tva||0))}${fd('Montant TTC €','attc',-(d.montant_ttc||0),true)}${fd('Motif','am',d.motif)}${fd('Commentaire','aco',d.commentaire)}</div><div style="margin-top:1rem"><div class="al aw">⚠️ Les avoirs sont en négatif dans <strong>🧾 Factures</strong>.</div></div>`;}
+
 function rfo(d){return`<div class="rg">${fd('Nom','fon',d.nom)}${fd('Contact','foc',d.contact)}${fd('Adresse','foa',d.adresse)}${fd('CP','focp',d.cp)}${fd('Ville','fov',d.ville)}${fd('Téléphone','fot',d.telephone)}${fd('Email','foe',d.email)}${fd('SIRET','fos',d.siret)}${fd('IBAN','foi',d.iban,!d.iban)}${fd('Délai Paiement','fodp',d.delai_paiement)}${fd('Certification Bio','focb',d.certification_bio)}</div><div style="margin-top:1rem"><div class="al ai2">→ Onglet : <strong>📋 Fournisseurs</strong></div></div>`;}
 
 function rl(ls){
@@ -441,7 +444,6 @@ function rl(ls){
 
 async function imp(){
   if(!tok){alert('Veuillez vous connecter à Google.');goStep(1);return;}
-  // Capturer le nom fournisseur AVANT de changer d'etape
   const _fournisseur=v('ff')||v('bf')||v('af')||data.fournisseur_nom||'';
   goStep(6);
   const sn=TABS[data.type];
@@ -450,7 +452,6 @@ async function imp(){
   else if(data.type==='bl') row=[[v('bn'),v('bdat'),v('bc'),v('bf'),'',n('bht'),'⚠️ En attente facture',v('bco')]];
   else if(data.type==='avoir') row=[[v('an'),v('ac'),v('af'),v('adat'),'',n('aht'),n('atva'),n('attc'),v('al2'),'Avoir','À déduire','','AVOIR — '+v('am')]];
   else row=[['' ,v('fon'),v('foc'),v('foa'),v('focp'),v('fov'),v('fot'),v('foe'),v('fos'),'',v('foi'),v('fodp'),'',v('focb')]];
-
   try{
     document.getElementById('isub').textContent='Recherche de la ligne TOTAUX…';
     const gr=await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(sn+'!A:A')}`,{headers:{Authorization:'Bearer '+tok}});
@@ -484,13 +485,10 @@ async function imp(){
     const wr=await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(sn+'!A'+nr)}?valueInputOption=USER_ENTERED`,{method:'PUT',headers:{Authorization:'Bearer '+tok,'Content-Type':'application/json'},body:JSON.stringify({values:row})});
     const wd=await wr.json();
     if(wd.error)throw new Error(wd.error.message);
-
-    // Auto-enregistrement des nouveaux produits
     if(data.lignes&&data.lignes.length>0&&(data.type==='facture'||data.type==='bl')){
       document.getElementById('isub').textContent='Verification des nouveaux produits...';
       await autoSaveProduits(data);
     }
-
     const en={id:Date.now(),type:data.type,name:file?file.name:'doc',date:new Date().toLocaleString('fr-FR'),row:nr,numero:data.numero||data.numero_bl||data.nom||''};
     hist.unshift(en);if(hist.length>20)hist=hist.slice(0,20);
     localStorage.setItem('feh',JSON.stringify(hist));
@@ -508,13 +506,20 @@ async function imp(){
   }
 }
 
+// =============================================
+// TILLER — VERSION CORRIGÉE
+// =============================================
 async function processTiller(f){
   goStep(4);setP(10,'Lecture du fichier CSV...');
   try{
     const txt=await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsText(f,'UTF-8');});
     setP(30,'Analyse des produits caisse...');
+
+    // Détection automatique du séparateur
+    const sep=txt.indexOf(';')>-1?';':',';
     const lines=txt.split(/\r?\n/).filter(l=>l.trim());
-    const headers=lines[0].split(';');
+    const headers=lines[0].split(sep).map(h=>h.trim().replace(/^"|"$/g,''));
+
     const iSKU=headers.indexOf('SKU');
     const iName=headers.indexOf('Name');
     const iPrice=headers.indexOf('Price');
@@ -522,96 +527,125 @@ async function processTiller(f){
     const iTax=headers.indexOf('Tax');
     const iCat=headers.indexOf('CategoryName');
     const iBarcode=headers.indexOf('Barcode');
+
+    // Vérification colonnes obligatoires
+    if(iName===-1||iPrice===-1){
+      alert('Format CSV non reconnu.\nColonnes attendues : Name, Price\nColonnes trouvées : '+headers.join(', '));
+      goStep(2);return;
+    }
+
+    const fixNum=s=>(s||'').replace(/"/g,'').replace(',','.');
+
     const tillerProds=lines.slice(1).map(l=>{
-      const cols=l.split(';');
-      const fixNum=s=>(s||'').replace(/"/g,'').replace(',','.');return{sku:cols[iSKU]||'',name:(cols[iName]||'').replace(/"/g,'').trim(),price:fixNum(cols[iPrice]),cost:fixNum(cols[iCost]),tax:fixNum(cols[iTax]),cat:cols[iCat]||'',barcode:cols[iBarcode]||''};
-    }).filter(p=>p.name);
+      const cols=l.split(sep).map(c=>c.trim().replace(/^"|"$/g,''));
+      const sku=(iSKU!==-1?cols[iSKU]:'')||'';
+      const name=(cols[iName]||'').trim();
+      if(!name)return null;
+      // Si SKU vide, génère un code depuis le nom
+      const code=sku||name.toUpperCase().replace(/[ÉÈÊËÀÂÄÙÛÜÎÏÌÔÖÒÇ]/g,c=>({'É':'E','È':'E','Ê':'E','Ë':'E','À':'A','Â':'A','Ä':'A','Ù':'U','Û':'U','Ü':'U','Î':'I','Ï':'I','Ì':'I','Ô':'O','Ö':'O','Ò':'O','Ç':'C'}[c]||c)).replace(/[^A-Z0-9]/g,'_').replace(/_+/g,'_').substring(0,20);
+      return{
+        sku:code,
+        name:name,
+        price:fixNum(cols[iPrice]),
+        cost:iCost!==-1?fixNum(cols[iCost]):'',
+        tax:iTax!==-1?fixNum(cols[iTax]):'',
+        cat:iCat!==-1?(cols[iCat]||''):'',
+        barcode:iBarcode!==-1?(cols[iBarcode]||''):''
+      };
+    }).filter(p=>p&&p.name);
 
     setP(50,'Lecture Produits & Marges...');
     const r=await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+'/values/'+encodeURIComponent('🔧 Produits & Marges!A4:F2000'),{headers:{Authorization:'Bearer '+tok}});
     const rd=await r.json();
-    const sheetsProds=(rd.values||[]).map((row,i)=>({row:i+4,code:row[0]||'',nom:row[1]||'',fournisseur:row[2]||'',prixVente:row[5]||''})).filter(p=>p.code||p.nom);
+    const sheetsProds=(rd.values||[]).map((row,i)=>({
+      row:i+4,
+      code:row[0]||'',
+      nom:row[1]||'',
+      fournisseur:row[2]||'',
+      prixVente:row[5]||''
+    })).filter(p=>p.code||p.nom);
 
-    setP(70,'Rapprochement par designation...');
-    // Rapprochement strict par mots-cles
-    const stopWords=new Set(['BIO','KG','1L','2L','5L','10L','75CL','33CL','50CL','BOTTE','VRAC','FRAIS','FRAICHE','CUIT','CUITE','SEC','SECHE','CRU','CRUE','IGP','AOP','AOC','LES','DES','DU','DE','LA','LE','ET','AU','AUX','SUR','POUR','PAR','BIO','THE','TEA']);
-    
-    // Synonymes connus
-    const synonymes={'PLEUROTTES':'PLEUROT','PLEUROTES':'PLEUROT','POIREAU':'POIREAUX','CAROTTE':'CAROTTE','CAROTTES':'CAROTTE','NAVET':'NAVET','NAVETS':'NAVET','NOIX':'NOIX','POMME':'POMME','POMMES':'POMME','BUTTERNUT':'BUTTERNUT','MACHE':'MACHE'};
-    
-    const normalise=w=>{
-      const base=w.toUpperCase().replace(/S$/,''); // retirer pluriel
-      return synonymes[base]||synonymes[w.toUpperCase()]||w.toUpperCase();
+    setP(70,'Rapprochement par désignation...');
+
+    const stopWords=new Set(['BIO','KG','1L','2L','5L','10L','75CL','33CL','50CL','BOTTE','VRAC','FRAIS','FRAICHE','CUIT','CUITE','SEC','SECHE','CRU','CRUE','IGP','AOP','AOC','LES','DES','DU','DE','LA','LE','ET','AU','AUX','SUR','THE','TEA']);
+
+    const synonymes={
+      'PLEUROTTES':'PLEUROT','PLEUROTES':'PLEUROT',
+      'POIREAU':'POIREAUX','CAROTTES':'CAROTTE','NAVETS':'NAVET',
+      'POMMES':'POMME','AUBERGINES':'AUBERGINE','COURGETTES':'COURGETTE',
+      'TOMATES':'TOMATE','SALADES':'SALADE','OIGNONS':'OIGNON',
+      'HARICOTS':'HARICOT','EPINARDS':'EPINARD','RADIS':'RADIS',
+      'FRAISES':'FRAISE','CERISES':'CERISE','ABRICOTS':'ABRICOT',
+      'PECHES':'PECHE','POIRES':'POIRE','PRUNES':'PRUNE'
     };
-    
-    // Paires interdites (faux positifs connus)
-    const blacklist=[['POIREAUX','POIRE'],['POIRE','POIREAUX'],['CAROTTE','CAROTTE BOTTE'],['NAVET','NAVETTE'],['NOIX','NOIX5KG']];
-    const estInterdit=(tName,sName)=>blacklist.some(([t,s])=>tName.includes(t)&&sName.includes(s)&&tName!==sName);
+
+    const accentMap={'É':'E','È':'E','Ê':'E','Ë':'E','À':'A','Â':'A','Ä':'A','Ù':'U','Û':'U','Ü':'U','Î':'I','Ï':'I','Ì':'I','Ô':'O','Ö':'O','Ò':'O','Ç':'C','é':'E','è':'E','ê':'E','ë':'E','à':'A','â':'A','ä':'A','ù':'U','û':'U','ü':'U','î':'I','ï':'I','ì':'I','ô':'O','ö':'O','ò':'O','ç':'C'};
+    const deAccent=s=>s.split('').map(c=>accentMap[c]||c).join('');
+
+    const normalise=w=>{
+      const base=deAccent(w.toUpperCase()).replace(/S$/,'');
+      return synonymes[base]||synonymes[w.toUpperCase()]||base;
+    };
 
     const matches=[];
     for(const tp of tillerProds){
-      const tName=tp.name.toUpperCase();
+      const tName=deAccent(tp.name.toUpperCase());
       let best=null;let bestScore=0;
       const tWords=tName.split(/[\s\-\/,()]+/).filter(w=>w.length>2&&!stopWords.has(w)).map(normalise);
-      if(tWords.length===0)continue;
-      
-      // Mapping categorie Tiller -> mots-cles fournisseur Sheets
-      const catFourn={'VINS':['LIOTAUD','RIEU','MACHON','RETINTON','BOUC','TREILLE','LANTIGNAC','SARMENTS','MANCHOT','PILAT'],'BIERES':['MANCHOT','PILAT','EDMOND'],'CHARCUTERIE':['MONTCHERVET'],'PRODUITS LAITIERS':['TRIOMPHE','YAOURTIERE','PLASNE','CAPRINE'],'POISSONS':['ETRE','SOURCES'],'CONSERVES':['CLAC','CONSERVERIE','TOUTENPOT','SANOFRUIT'],'EPICERIE':['BISCUITERIE','FRIGOULETTE','JANTON','BOURGOGNE'],'BOULANGERIE':['PAIN','PAYSAN']};
-      const tCat=tp.cat.toUpperCase();
-      const catKeywords=Object.entries(catFourn).find(([k])=>tCat.includes(k));
-      
+      if(tWords.length===0){
+        matches.push({tiller:tp,sheets:{row:-1,code:'',nom:'',fournisseur:'',prixVente:''},score:0,selected:false});
+        continue;
+      }
+
       for(const sp of sheetsProds){
-        const sName=sp.nom.toUpperCase();
-        const sFourn=(sp.fournisseur||'').toUpperCase();
+        const sName=deAccent((sp.nom||'').toUpperCase());
         const sWords=sName.split(/[\s\-\/,()]+/).filter(w=>w.length>2&&!stopWords.has(w)).map(normalise);
         if(sWords.length===0)continue;
-        
-        const tMain=tWords[0];
-        const sMain=sWords[0];
-        
-        // Mots communs avec normalisation
+
         const common=tWords.filter(tw=>sWords.some(sw=>{
           if(tw===sw)return true;
-          if(tw.length>=6&&sw.length>=6&&tw.substring(0,6)===sw.substring(0,6))return true;
+          if(tw.length>=5&&sw.length>=5&&tw.substring(0,5)===sw.substring(0,5))return true;
           return false;
         }));
-        
         if(common.length===0)continue;
-        
+
         let score=common.length/Math.max(tWords.length,sWords.length);
-        
-        // Bonus mot principal
-        if(tMain===sMain||common.includes(tMain))score+=0.2;
-        
-        // Bonus fournisseur : si la categorie Tiller correspond au fournisseur Sheets
-        if(catKeywords&&catKeywords[1].some(k=>sFourn.includes(k)))score+=0.15;
-        
-        // Penalite si mots principaux differents
-        if(tMain!==sMain&&!common.includes(tMain)&&!common.includes(sMain))score*=0.5;
-        
-        // Verifier la blacklist
-        if(estInterdit(tName,sName))continue;
-        if(score>bestScore&&score>0.5){bestScore=score;best=sp;}
+        // Bonus si le premier mot correspond
+        if(common.includes(tWords[0]))score+=0.25;
+        // Pénalité si premiers mots très différents
+        if(tWords[0]!==sWords[0]&&!common.includes(tWords[0]))score*=0.7;
+
+        if(score>bestScore&&score>0.4){bestScore=score;best=sp;}
       }
-      if(best){matches.push({tiller:tp,sheets:best,score:Math.round(Math.min(bestScore,1)*100),selected:bestScore>=0.65});}
+
+      // Toujours ajouter le produit Tiller, avec ou sans correspondance
+      matches.push({
+        tiller:tp,
+        sheets:best||{row:-1,code:'',nom:'',fournisseur:'',prixVente:''},
+        score:best?Math.round(Math.min(bestScore,1)*100):0,
+        selected:best!==null&&bestScore>=0.55
+      });
     }
 
     setP(100,'Terminé !');
     setTimeout(()=>renderTiller(matches,tillerProds,sheetsProds),500);
-  }catch(err){console.error(err);alert('Erreur: '+err.message);}
+
+  }catch(err){
+    console.error('processTiller error:',err);
+    alert('Erreur lecture CSV: '+err.message);
+    goStep(2);
+  }
 }
+// =============================================
 
 function renderTiller(matches,tillerProds,sheetsProds,filterCat=''){
   window.matches_data=matches;
   if(tillerProds)window.tiller_prods=tillerProds;
   if(sheetsProds)window.sheets_prods=sheetsProds;
   const body=document.getElementById('p8b');
-
-  // Categories disponibles
   const cats=[...new Set(matches.map(m=>m.tiller.cat))].sort();
   const filtered=filterCat?matches.filter(m=>m.tiller.cat===filterCat):matches;
   const nbMatch=filtered.filter(m=>m.selected).length;
-
   let h=`<div style="margin-bottom:1rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap">`;
   h+=`<div class="al ai2" style="margin:0;flex:1">✅ <strong>${nbMatch} correspondances</strong> sur ${filtered.length} produits affichés</div>`;
   h+=`<div style="display:flex;align-items:center;gap:.5rem">`;
@@ -627,24 +661,19 @@ function renderTiller(matches,tillerProds,sheetsProds,filterCat=''){
   h+=`<button onclick="toggleAll(true)" style="background:var(--vert-l);border:none;padding:.3rem .75rem;border-radius:6px;font-size:.75rem;cursor:pointer;font-weight:600">✓ Tout</button>`;
   h+=`<button onclick="toggleAll(false)" style="background:var(--rouge-l);border:none;padding:.3rem .75rem;border-radius:6px;font-size:.75rem;cursor:pointer;font-weight:600">✗ Aucun</button>`;
   h+=`</div></div>`;
-
-  // Stocker le filtre actif
   window.current_cat=filterCat;
-
-  // Legende confiance
   h+=`<div style="display:flex;gap:.75rem;margin-bottom:.75rem;font-size:.75rem;align-items:center">
     <span style="font-weight:600;color:#666">Confiance :</span>
     <span class="mb mok">≥70% Fiable</span>
-    <span class="mb mw">50-69% A verifier</span>
-    <span class="mb cl2">&lt;50% Douteux</span>
+    <span class="mb mw">50-69% À vérifier</span>
+    <span class="mb cl2">&lt;50% Douteux / Sans correspondance</span>
     <span style="color:#888;margin-left:1rem">💡 Tous les champs sont éditables avant import</span>
   </div>`;
-
   h+=`<div style="overflow-x:auto"><table class="ptb">
     <thead><tr>
       <th style="width:30px">✓</th>
       <th>Nom Tiller</th>
-      <th>Fournisseur Tiller</th>
+      <th>Catégorie</th>
       <th>Fournisseur Sheets</th>
       <th>Code Sheets</th>
       <th>Désignation Sheets</th>
@@ -653,37 +682,32 @@ function renderTiller(matches,tillerProds,sheetsProds,filterCat=''){
       <th>TVA %</th>
       <th>Conf.</th>
     </tr></thead><tbody>`;
-
   filtered.forEach(m=>{
     const i=matches.indexOf(m);
     const conf=m.score>=70?'mok':m.score>=50?'mw':'cl2';
     const inp=`style="width:100%;background:transparent;border:none;font-family:'DM Mono',monospace;font-size:.8rem;outline:none;padding:2px 4px"`;
     const inpBox=`style="border:1px solid #e0e0e0;border-radius:4px;background:#fff"`;
-    // Extraire fournisseur Tiller depuis le nom (souvent en debut de nom)
-    const tillerFourn=m.tiller.name.split(' ').slice(0,3).join(' ');
-    // Correspondance fournisseur Sheets
-    const sheetsFourn=m.sheets.fournisseur||'';
-    const fournMatch=sheetsFourn&&tillerFourn&&sheetsFourn.toUpperCase().split(' ').some(w=>w.length>3&&tillerFourn.toUpperCase().includes(w));
-    h+=`<tr style="vertical-align:middle">`;
+    const noMatch=m.sheets.row===-1;
+    h+=`<tr style="vertical-align:middle${noMatch?';opacity:.6':''}">`;
     h+=`<td style="text-align:center"><input type="checkbox" id="cb${i}" ${m.selected?'checked':''} onchange="window.matches_data[${i}].selected=this.checked"></td>`;
     h+=`<td style="font-size:.8rem;font-weight:500">${m.tiller.name}</td>`;
-    h+=`<td style="font-size:.75rem;color:#666">${tillerFourn}</td>`;
-    h+=`<td style="font-size:.75rem;${fournMatch?'color:var(--vert);font-weight:600':'color:#c62828'}">${sheetsFourn||'—'}</td>`;
+    h+=`<td style="font-size:.75rem;color:#666">${m.tiller.cat}</td>`;
+    h+=`<td style="font-size:.75rem;color:${noMatch?'#c62828':'var(--vert)';font-weight:600}">${m.sheets.fournisseur||'—'}</td>`;
     h+=`<td><div ${inpBox}><input ${inp} id="tc${i}" value="${m.sheets.code}"></div></td>`;
-    h+=`<td><div ${inpBox}><input ${inp} id="td${i}" value="${m.sheets.nom}" style="width:100%;background:transparent;border:none;font-size:.8rem;outline:none;padding:2px 4px;min-width:150px"></div></td>`;
-    h+=`<td style="text-align:right;font-size:.8rem;color:#666">${m.tiller.cost}€</td>`;
+    h+=`<td><div ${inpBox}><input ${inp} id="td${i}" value="${m.sheets.nom}" style="min-width:150px;width:100%;background:transparent;border:none;font-size:.8rem;outline:none;padding:2px 4px"></div></td>`;
+    h+=`<td style="text-align:right;font-size:.8rem;color:#666">${m.tiller.cost?m.tiller.cost+'€':'—'}</td>`;
     h+=`<td><div ${inpBox}><input ${inp} id="tp${i}" value="${m.tiller.price}" style="width:70px;background:transparent;border:none;font-size:.8rem;outline:none;padding:2px 4px;text-align:right;font-weight:600;color:var(--vert)"></div></td>`;
-    h+=`<td style="font-size:.8rem;color:#888">${m.tiller.tax}%</td>`;
-    h+=`<td><span class="mb ${conf}">${m.score}%</span></td>`;
+    h+=`<td style="font-size:.8rem;color:#888">${m.tiller.tax?m.tiller.tax+'%':'—'}</td>`;
+    h+=`<td><span class="mb ${conf}">${noMatch?'—':m.score+'%'}</span></td>`;
     h+=`</tr>`;
   });
   h+=`</tbody></table></div>`;
+  const nbSel=matches.filter(m=>m.selected).length;
   h+=`<div class="br" style="margin-top:1.5rem">`;
   h+=`<button class="btn bs" onclick="goStep(2)">← Retour</button>`;
-  h+=`<button class="btn bsuc" onclick="applyTiller()">📊 Mettre à jour (${matches.filter(m=>m.selected).length} produits) →</button>`;
+  h+=`<button class="btn bsuc" onclick="applyTiller()">📊 Mettre à jour (${nbSel} produits) →</button>`;
   h+=`</div>`;
   body.innerHTML=h;
-
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   document.getElementById('panel-8').classList.add('active');
 }
@@ -705,18 +729,16 @@ function toggleAll(val){
 
 async function applyTiller(){
   if(!tok){alert('Connectez-vous à Google.');return;}
-  const selected=window.matches_data.filter(m=>m.selected);
-  if(!selected.length){alert('Aucune correspondance sélectionnée.');return;}
+  const selected=window.matches_data.filter(m=>m.selected&&m.sheets.row>-1);
+  if(!selected.length){alert('Aucune correspondance valide sélectionnée.');return;}
   goStep(6);document.getElementById('isub').textContent='Mise à jour des prix...';
   try{
     const requests=selected.map((m,i)=>{
       const price=document.getElementById('tp'+window.matches_data.indexOf(m));
       const rawVal=(price?price.value:m.tiller.price)+'';
-      // Convertir en nombre pur (gere virgule et point)
       const numVal=parseFloat(rawVal.replace(',','.'));
       return{range:'🔧 Produits & Marges!F'+(m.sheets.row),values:[[isNaN(numVal)?0:numVal]]};
     });
-    // Ecrire en RAW = nombres purs, Sheets ne peut pas les mal interpreter
     const res=await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+'/values:batchUpdate',{
       method:'POST',headers:{Authorization:'Bearer '+tok,'Content-Type':'application/json'},
       body:JSON.stringify({valueInputOption:'RAW',data:requests.map(r=>({range:r.range,values:r.values}))})
@@ -744,22 +766,17 @@ async function autoSaveProduits(d){
       }
     }
     if(nouveaux.length===0)return;
-    // Trouver la derniere ligne NON VIDE (ignorer les lignes vides)
     let lastNonEmpty=0;
     for(let i=rows.length-1;i>=0;i--){
-      if(rows[i]&&rows[i][0]&&rows[i][0].toString().trim()!==''){
-        lastNonEmpty=i;
-        break;
-      }
+      if(rows[i]&&rows[i][0]&&rows[i][0].toString().trim()!==''){lastNonEmpty=i;break;}
     }
-    const lastRow=lastNonEmpty+5; // +4 pour l'offset (lignes 1-3 header) +1 pour la prochaine ligne
-    // Ecrire les donnees avec formules directement
+    const lastRow=lastNonEmpty+5;
     const nouveauxAvecFormules=nouveaux.map((row,i)=>{
       const r=lastRow+i;
       return [
         row[0],row[1],row[2],row[3],row[4],
         row[5],row[6],
-        '=SI(F'+r+'="";"";F'+r+'/(1+SIERREUR(SI(ESTNUM(G'+r+');G'+r+';CNUM(SUBSTITUE(G'+r+';"%";""))/100);0.055)))',
+        '=SI(F'+r+'="";"";F'+r+'/(1+SIERREUR(SI(ESTNUM(G'+r+');G'+r+';CNUM(SUBSTITUE(SUBSTITUE(G'+r+';"%";"");",";"."))/100);0,055)))',
         '=SI(H'+r+'="";"";H'+r+'-E'+r+')',
         '=SI(OU(I'+r+'="";E'+r+'=0);"";I'+r+'/E'+r+')',
         '=SI(OU(I'+r+'="";H'+r+'=0);"";I'+r+'/H'+r+')',
@@ -769,7 +786,6 @@ async function autoSaveProduits(d){
     const wr=await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+'/values/'+encodeURIComponent('🔧 Produits & Marges!A'+lastRow)+'?valueInputOption=USER_ENTERED',{method:'PUT',headers:{Authorization:'Bearer '+tok,'Content-Type':'application/json'},body:JSON.stringify({values:nouveauxAvecFormules})});
     const wrd=await wr.json();
     if(wrd.error){console.error('write error:',wrd.error);return;}
-    // Copier uniquement le FORMAT
     const si=await(await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+'?fields=sheets.properties',{headers:{Authorization:'Bearer '+tok}})).json();
     const sheet=si.sheets.find(s=>s.properties.title==='🔧 Produits & Marges');
     if(sheet){
@@ -778,17 +794,15 @@ async function autoSaveProduits(d){
       const reqs=nouveaux.map((_,i)=>({copyPaste:{source:{sheetId:sid,startRowIndex:srcRow,endRowIndex:srcRow+1,startColumnIndex:0,endColumnIndex:14},destination:{sheetId:sid,startRowIndex:lastRow-1+i,endRowIndex:lastRow+i,startColumnIndex:0,endColumnIndex:14},pasteType:'PASTE_FORMAT'}}));
       await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+':batchUpdate',{method:'POST',headers:{Authorization:'Bearer '+tok,'Content-Type':'application/json'},body:JSON.stringify({requests:reqs})});
     }
-    // Afficher le nombre de produits ajoutes sur l'ecran de succes
     if(nouveaux.length>0){
       const sdet=document.getElementById('sdet');
       if(sdet){
         sdet.innerHTML+=`<div class="ss"><div class="ssn">${nouveaux.length}</div><div class="ssl">Nouveaux produits ajoutés</div></div>`;
       }
     }
-    console.log(nouveaux.length+' produit(s) ajoute(s)');
+    console.log(nouveaux.length+' produit(s) ajouté(s)');
   }catch(e){
     console.error('autoSaveProduits:',e);
-    // Afficher l'erreur sur l'ecran de succes
     const sdet=document.getElementById('sdet');
     if(sdet){
       const eb=document.createElement('div');
@@ -840,12 +854,12 @@ async function activateFilters(){
         nb++;
       }
     }
-    if(!requests.length){fm.textContent='Aucun onglet trouve.';return;}
+    if(!requests.length){fm.textContent='Aucun onglet trouvé.';return;}
     const res=await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+':batchUpdate',{method:'POST',headers:{Authorization:'Bearer '+tok,'Content-Type':'application/json'},body:JSON.stringify({requests})});
     const rd=await res.json();
     if(rd.error)throw new Error(rd.error.message);
     fm.style.color='#2e7d32';
-    fm.textContent='Filtres actives sur '+nb+' onglets !';
+    fm.textContent='Filtres activés sur '+nb+' onglets !';
   }catch(err){fm.style.color='#c62828';fm.textContent='Erreur : '+err.message;}
 }
 </script>
