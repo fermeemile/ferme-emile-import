@@ -778,8 +778,26 @@ async function autoSaveProduits(d){
       const reqs=nouveaux.map((_,i)=>({copyPaste:{source:{sheetId:sid,startRowIndex:srcRow,endRowIndex:srcRow+1,startColumnIndex:0,endColumnIndex:14},destination:{sheetId:sid,startRowIndex:lastRow-1+i,endRowIndex:lastRow+i,startColumnIndex:0,endColumnIndex:14},pasteType:'PASTE_FORMAT'}}));
       await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+':batchUpdate',{method:'POST',headers:{Authorization:'Bearer '+tok,'Content-Type':'application/json'},body:JSON.stringify({requests:reqs})});
     }
+    // Afficher le nombre de produits ajoutes sur l'ecran de succes
+    if(nouveaux.length>0){
+      const sdet=document.getElementById('sdet');
+      if(sdet){
+        sdet.innerHTML+=`<div class="ss"><div class="ssn">${nouveaux.length}</div><div class="ssl">Nouveaux produits ajoutés</div></div>`;
+      }
+    }
     console.log(nouveaux.length+' produit(s) ajoute(s)');
-  }catch(e){console.error('autoSaveProduits:',e);}
+  }catch(e){
+    console.error('autoSaveProduits:',e);
+    // Afficher l'erreur sur l'ecran de succes
+    const sdet=document.getElementById('sdet');
+    if(sdet){
+      const eb=document.createElement('div');
+      eb.className='al ae';
+      eb.style.marginTop='1rem';
+      eb.innerHTML='⚠️ Produits non ajoutés : '+e.message;
+      sdet.parentNode.insertBefore(eb,sdet.nextSibling);
+    }
+  }
 }
 
 function v(id){const e=document.getElementById(id);return e?e.value:'';}
