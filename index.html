@@ -528,37 +528,66 @@ async function processTiller(f){
     }).filter(p=>p.name);
 
     setP(50,'Lecture Produits & Marges...');
-    const r=await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+'/values/'+encodeURIComponent('🔧 Produits & Marges!A4:F200'),{headers:{Authorization:'Bearer '+tok}});
+    const r=await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+'/values/'+encodeURIComponent('🔧 Produits & Marges!A4:F2000'),{headers:{Authorization:'Bearer '+tok}});
     const rd=await r.json();
-    const sheetsProds=(rd.values||[]).map((row,i)=>({row:i+4,code:row[0]||'',nom:row[1]||'',prixVente:row[5]||''})).filter(p=>p.code||p.nom);
+    const sheetsProds=(rd.values||[]).map((row,i)=>({row:i+4,code:row[0]||'',nom:row[1]||'',fournisseur:row[2]||'',prixVente:row[5]||''})).filter(p=>p.code||p.nom);
 
     setP(70,'Rapprochement par designation...');
-    // Rapprochement ameliore - score strict
-    const stopWords=new Set(['BIO','KG','1L','5L','75CL','BOTTE','VRAC','FRAIS','CUIT','SEC','CRU','IGP','AOP','AOC','LES','DES','DU','DE','LA','LE','ET','AU']);
+    // Rapprochement strict par mots-cles
+    const stopWords=new Set(['BIO','KG','1L','2L','5L','10L','75CL','33CL','50CL','BOTTE','VRAC','FRAIS','FRAICHE','CUIT','CUITE','SEC','SECHE','CRU','CRUE','IGP','AOP','AOC','LES','DES','DU','DE','LA','LE','ET','AU','AUX','SUR','POUR','PAR','BIO','THE','TEA']);
+    
+    // Synonymes connus
+    const synonymes={'PLEUROTTES':'PLEUROT','PLEUROTES':'PLEUROT','POIREAU':'POIREAUX','CAROTTE':'CAROTTE','CAROTTES':'CAROTTE','NAVET':'NAVET','NAVETS':'NAVET','NOIX':'NOIX','POMME':'POMME','POMMES':'POMME','BUTTERNUT':'BUTTERNUT','MACHE':'MACHE'};
+    
+    const normalise=w=>{
+      const base=w.toUpperCase().replace(/S$/,''); // retirer pluriel
+      return synonymes[base]||synonymes[w.toUpperCase()]||w.toUpperCase();
+    };
+    
     const matches=[];
     for(const tp of tillerProds){
       const tName=tp.name.toUpperCase();
       let best=null;let bestScore=0;
-      const tWords=tName.split(/[\s\-\/,]+/).filter(w=>w.length>2&&!stopWords.has(w));
+      const tWords=tName.split(/[\s\-\/,()]+/).filter(w=>w.length>2&&!stopWords.has(w)).map(normalise);
+      if(tWords.length===0)continue;
+      
+      // Mapping categorie Tiller -> mots-cles fournisseur Sheets
+      const catFourn={'VINS':['LIOTAUD','RIEU','MACHON','RETINTON','BOUC','TREILLE','LANTIGNAC','SARMENTS','MANCHOT','PILAT'],'BIERES':['MANCHOT','PILAT','EDMOND'],'CHARCUTERIE':['MONTCHERVET'],'PRODUITS LAITIERS':['TRIOMPHE','YAOURTIERE','PLASNE','CAPRINE'],'POISSONS':['ETRE','SOURCES'],'CONSERVES':['CLAC','CONSERVERIE','TOUTENPOT','SANOFRUIT'],'EPICERIE':['BISCUITERIE','FRIGOULETTE','JANTON','BOURGOGNE'],'BOULANGERIE':['PAIN','PAYSAN']};
+      const tCat=tp.cat.toUpperCase();
+      const catKeywords=Object.entries(catFourn).find(([k])=>tCat.includes(k));
+      
       for(const sp of sheetsProds){
         const sName=sp.nom.toUpperCase();
-        const sWords=sName.split(/[\s\-\/,]+/).filter(w=>w.length>2&&!stopWords.has(w));
-        if(tWords.length===0||sWords.length===0)continue;
-        // Mots en commun stricts
+        const sFourn=(sp.fournisseur||'').toUpperCase();
+        const sWords=sName.split(/[\s\-\/,()]+/).filter(w=>w.length>2&&!stopWords.has(w)).map(normalise);
+        if(sWords.length===0)continue;
+        
+        const tMain=tWords[0];
+        const sMain=sWords[0];
+        
+        // Mots communs avec normalisation
         const common=tWords.filter(tw=>sWords.some(sw=>{
-          if(tw===sw)return true; // exact
-          if(tw.length>=5&&sw.startsWith(tw.substring(0,5)))return true; // prefixe 5 chars
-          if(sw.length>=5&&tw.startsWith(sw.substring(0,5)))return true;
+          if(tw===sw)return true;
+          if(tw.length>=6&&sw.length>=6&&tw.substring(0,6)===sw.substring(0,6))return true;
           return false;
         }));
-        // Score = proportion de mots Tiller retrouves dans Sheets
-        const score=common.length/tWords.length;
-        // Penalite si trop de mots Sheets non retrouves
-        const penalty=(sWords.length-common.length)/sWords.length*0.3;
-        const finalScore=score-penalty;
-        if(finalScore>bestScore&&finalScore>0.45){bestScore=finalScore;best=sp;}
+        
+        if(common.length===0)continue;
+        
+        let score=common.length/Math.max(tWords.length,sWords.length);
+        
+        // Bonus mot principal
+        if(tMain===sMain||common.includes(tMain))score+=0.2;
+        
+        // Bonus fournisseur : si la categorie Tiller correspond au fournisseur Sheets
+        if(catKeywords&&catKeywords[1].some(k=>sFourn.includes(k)))score+=0.15;
+        
+        // Penalite si mots principaux differents
+        if(tMain!==sMain&&!common.includes(tMain)&&!common.includes(sMain))score*=0.5;
+        
+        if(score>bestScore&&score>0.5){bestScore=score;best=sp;}
       }
-      if(best){matches.push({tiller:tp,sheets:best,score:Math.round(bestScore*100),selected:bestScore>=0.6});}
+      if(best){matches.push({tiller:tp,sheets:best,score:Math.round(Math.min(bestScore,1)*100),selected:bestScore>=0.65});}
     }
 
     setP(100,'Terminé !');
@@ -688,7 +717,7 @@ async function applyTiller(){
 
 async function autoSaveProduits(d){
   try{
-    const r=await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+'/values/'+encodeURIComponent('🔧 Produits & Marges!A4:N200'),{headers:{Authorization:'Bearer '+tok}});
+    const r=await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+'/values/'+encodeURIComponent('🔧 Produits & Marges!A4:N2000'),{headers:{Authorization:'Bearer '+tok}});
     const rd=await r.json();
     const rows=rd.values||[];
     const existants=new Set(rows.map(row=>(row[0]||'').toString().toUpperCase()));
