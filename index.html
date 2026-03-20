@@ -382,7 +382,7 @@ async function pf(f){
       }catch(pe){console.error('Parse error:',pe);data=demo(dtype);}
     }
   } catch(err){clearInterval(iv);console.error('Fetch error:',err);data=demo(dtype);}
-  setTimeout(()=>{render(data);goStep(5);},500);
+  setTimeout(()=>{try{render(data);}catch(e){console.error('render error:',e);}goStep(5);},500);
 }
 
 function setP(p,m){
@@ -544,6 +544,10 @@ async function processTiller(f){
       return synonymes[base]||synonymes[w.toUpperCase()]||w.toUpperCase();
     };
     
+    // Paires interdites (faux positifs connus)
+    const blacklist=[['POIREAUX','POIRE'],['POIRE','POIREAUX'],['CAROTTE','CAROTTE BOTTE'],['NAVET','NAVETTE'],['NOIX','NOIX5KG']];
+    const estInterdit=(tName,sName)=>blacklist.some(([t,s])=>tName.includes(t)&&sName.includes(s)&&tName!==sName);
+
     const matches=[];
     for(const tp of tillerProds){
       const tName=tp.name.toUpperCase();
@@ -585,6 +589,8 @@ async function processTiller(f){
         // Penalite si mots principaux differents
         if(tMain!==sMain&&!common.includes(tMain)&&!common.includes(sMain))score*=0.5;
         
+        // Verifier la blacklist
+        if(estInterdit(tName,sName))continue;
         if(score>bestScore&&score>0.5){bestScore=score;best=sp;}
       }
       if(best){matches.push({tiller:tp,sheets:best,score:Math.round(Math.min(bestScore,1)*100),selected:bestScore>=0.65});}
@@ -638,7 +644,8 @@ function renderTiller(matches,tillerProds,sheetsProds,filterCat=''){
     <thead><tr>
       <th style="width:30px">✓</th>
       <th>Nom Tiller</th>
-      <th>Catégorie</th>
+      <th>Fournisseur Tiller</th>
+      <th>Fournisseur Sheets</th>
       <th>Code Sheets</th>
       <th>Désignation Sheets</th>
       <th>Prix Achat HT</th>
@@ -652,10 +659,16 @@ function renderTiller(matches,tillerProds,sheetsProds,filterCat=''){
     const conf=m.score>=70?'mok':m.score>=50?'mw':'cl2';
     const inp=`style="width:100%;background:transparent;border:none;font-family:'DM Mono',monospace;font-size:.8rem;outline:none;padding:2px 4px"`;
     const inpBox=`style="border:1px solid #e0e0e0;border-radius:4px;background:#fff"`;
+    // Extraire fournisseur Tiller depuis le nom (souvent en debut de nom)
+    const tillerFourn=m.tiller.name.split(' ').slice(0,3).join(' ');
+    // Correspondance fournisseur Sheets
+    const sheetsFourn=m.sheets.fournisseur||'';
+    const fournMatch=sheetsFourn&&tillerFourn&&sheetsFourn.toUpperCase().split(' ').some(w=>w.length>3&&tillerFourn.toUpperCase().includes(w));
     h+=`<tr style="vertical-align:middle">`;
     h+=`<td style="text-align:center"><input type="checkbox" id="cb${i}" ${m.selected?'checked':''} onchange="window.matches_data[${i}].selected=this.checked"></td>`;
     h+=`<td style="font-size:.8rem;font-weight:500">${m.tiller.name}</td>`;
-    h+=`<td style="font-size:.75rem;color:#888">${m.tiller.cat}</td>`;
+    h+=`<td style="font-size:.75rem;color:#666">${tillerFourn}</td>`;
+    h+=`<td style="font-size:.75rem;${fournMatch?'color:var(--vert);font-weight:600':'color:#c62828'}">${sheetsFourn||'—'}</td>`;
     h+=`<td><div ${inpBox}><input ${inp} id="tc${i}" value="${m.sheets.code}"></div></td>`;
     h+=`<td><div ${inpBox}><input ${inp} id="td${i}" value="${m.sheets.nom}" style="width:100%;background:transparent;border:none;font-size:.8rem;outline:none;padding:2px 4px;min-width:150px"></div></td>`;
     h+=`<td style="text-align:right;font-size:.8rem;color:#666">${m.tiller.cost}€</td>`;
