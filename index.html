@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>La Ferme d'Emile — Import Automatique</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsrsasign/10.9.0/jsrsasign-all-min.js"></script>
 <style>
 :root{--vert:#1a5e2a;--vert-m:#2e7d32;--vert-l:#c8e6c9;--vert-p:#e8f5e9;--or:#f9a825;--rouge:#c62828;--rouge-l:#ffcdd2;--jaune:#fff9c4;--bleu:#1565c0;--gris:#f5f5f5;--gris-m:#e0e0e0;--noir:#1a1a1a;--bg:#f7faf7}
 *{margin:0;padding:0;box-sizing:border-box}
@@ -162,21 +162,34 @@ header{background:var(--vert);padding:0 2rem;display:flex;align-items:center;jus
 <div class="pb">
 <div class="auth-box">
 <span class="ai">🔐</span>
-<div class="at">Connectez votre Google Drive</div>
-<div class="as">L'outil va importer directement dans votre fichier<br><strong>FermeEmile_GestionComplète_v3</strong><br><br>Connectez-vous avec <strong>lafermedemilecollonges@gmail.com</strong></div>
-<div style="margin-bottom:1.5rem;text-align:left;max-width:480px;margin-left:auto;margin-right:auto">
-<div class="fl" style="margin-bottom:.5rem">🔑 Clé API Claude (stockée sur votre Mac uniquement)</div>
+<div class="at">Configuration de l'accès</div>
+<div class="as">Deux clés à configurer une seule fois — mémorisées sur votre appareil</div>
+
+<div style="text-align:left;max-width:500px;margin:0 auto 1.5rem">
+
+<div style="background:var(--gris);border-radius:10px;padding:1.25rem;margin-bottom:1rem">
+<div class="fl" style="margin-bottom:.5rem">🔑 1. Clé API Claude</div>
 <div style="display:flex;gap:.5rem">
 <input type="password" id="apikey" placeholder="sk-ant-api03-..." style="flex:1;padding:.75rem 1rem;border:2px solid var(--gris-m);border-radius:8px;font-family:DM Mono,monospace;font-size:.85rem;outline:none" value="" />
 <button onclick="saveKey()" style="background:var(--vert);color:#fff;border:none;padding:.75rem 1rem;border-radius:8px;font-weight:600;cursor:pointer;white-space:nowrap">💾 Sauver</button>
 </div>
-<div style="font-size:.75rem;color:#888;margin-top:.4rem">Saisie une seule fois, mémorisée sur votre appareil.</div>
 </div>
-<button class="btn-g" onclick="signIn()">
-<svg width="20" height="20" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-Se connecter avec Google
+
+<div style="background:var(--gris);border-radius:10px;padding:1.25rem;margin-bottom:1rem">
+<div class="fl" style="margin-bottom:.5rem">🗝️ 2. Clé Google Service Account (fichier JSON)</div>
+<label style="display:inline-flex;align-items:center;gap:.5rem;background:var(--bleu);color:#fff;padding:.75rem 1.25rem;border-radius:8px;cursor:pointer;font-weight:600;font-size:.9rem">
+📂 Charger fermeemile-xxxxx.json
+<input type="file" accept=".json" onchange="loadJsonKey(this)" style="display:none">
+</label>
+<div id="keyStatus" style="font-size:.8rem;margin-top:.5rem;color:#888">Aucune clé chargée</div>
+</div>
+
+</div>
+
+<button class="btn bp" onclick="signIn()" style="font-size:1rem;padding:.875rem 2.5rem">
+🚀 Se connecter
 </button>
-<div style="margin-top:1.5rem"><div class="al ai2">🔒 <span>Accès limité à votre fichier Google Sheets uniquement.</span></div></div>
+<div style="margin-top:1rem"><div class="al ai2">🔒 <span>Clés stockées uniquement sur votre Mac. Accès limité à votre Google Sheets.</span></div></div>
 </div>
 </div>
 </div>
@@ -271,35 +284,62 @@ Se connecter avec Google
 
 <script>
 const SHEET_ID = '1C1VbCbFRr3BUXrhCJlijnnSmhgw5taEkk54RmLD3UcQ';
-const ANTHROPIC_KEY = localStorage.getItem('fe_apikey')||'';
-const CLIENT_ID = '5490494382-dld6o3m45a5a5o6l1qvm7boh257nv9i8.apps.googleusercontent.com';
-const SCOPES = 'https://www.googleapis.com/auth/spreadsheets';
 const TABS = { facture:'🧾 Factures', bl:'🔍 BL & Rapprochement', avoir:'🧾 Factures', fournisseur:'📋 Fournisseurs' };
-let tc, tok=null, dtype=null, file=null, data=null;
+let tok=null, dtype=null, file=null, data=null;
 let hist = JSON.parse(localStorage.getItem('feh')||'[]');
 
-window.onload = () => {
-  tc = google.accounts.oauth2.initTokenClient({
-    client_id: CLIENT_ID, scope: SCOPES,
-    callback: r => {
-      if(r.error){alert('Erreur Google : '+r.error);return;}
-      tok=r.access_token;
-      document.getElementById('gdot').classList.add('on');
-      document.getElementById('gst').textContent='Connectée ✓';
-      goStep(2);
-    }
-  });
-  const savedKey=localStorage.getItem('fe_apikey');
-  if(savedKey){const kf=document.getElementById('apikey');if(kf)kf.value=savedKey;}
-  if(hist.length){document.getElementById('hsec').style.display='block';showHist();}
-};
+// Service Account — clé privée stockée localement
+const SA_EMAIL = 'ferme-emile-sheets@fermeemile.iam.gserviceaccount.com';
 
-function signIn(){
+function getPrivateKey(){
+  return localStorage.getItem('fe_sakey')||'';
+}
+
+async function getServiceAccountToken(){
+  const pk = getPrivateKey();
+  if(!pk) throw new Error('Clé privée non configurée');
+  const now = Math.floor(Date.now()/1000);
+  const header = {alg:'RS256',typ:'JWT'};
+  const claim = {
+    iss: SA_EMAIL,
+    scope: 'https://www.googleapis.com/auth/spreadsheets',
+    aud: 'https://oauth2.googleapis.com/token',
+    exp: now+3600,
+    iat: now
+  };
+  const jwt = KJUR.jws.JWS.sign('RS256', JSON.stringify(header), JSON.stringify(claim), pk);
+  const res = await fetch('https://oauth2.googleapis.com/token', {
+    method:'POST',
+    headers:{'Content-Type':'application/x-www-form-urlencoded'},
+    body:'grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Ajwt-bearer&assertion='+jwt
+  });
+  const d = await res.json();
+  if(d.error) throw new Error(d.error+': '+d.error_description);
+  return d.access_token;
+}
+
+async function signIn(){
   const k=document.getElementById('apikey');
   if(k&&k.value.startsWith('sk-')){localStorage.setItem('fe_apikey',k.value);}
   const key=localStorage.getItem('fe_apikey')||'';
   if(!key||!key.startsWith('sk-')){alert("Veuillez d'abord saisir votre clé API Claude (sk-ant-...)");return;}
-  tc.requestAccessToken({prompt:'consent'});
+  const pk=getPrivateKey();
+  if(!pk){alert("Clé privée Google non configurée. Importez votre fichier JSON.");return;}
+  try{
+    document.getElementById('gst').textContent='Connexion…';
+    tok = await getServiceAccountToken();
+    document.getElementById('gdot').classList.add('on');
+    document.getElementById('gst').textContent='Connectée ✓';
+    goStep(2);
+  }catch(e){
+    alert('Erreur connexion Google : '+e.message);
+    document.getElementById('gst').textContent='Erreur';
+  }
+}
+
+async function refreshTokIfNeeded(){
+  // Renouvelle silencieusement le token si besoin
+  try{ tok = await getServiceAccountToken(); }catch(e){ console.error('refresh error',e); }
 }
 
 function saveKey(){
@@ -307,6 +347,35 @@ function saveKey(){
   if(k&&k.value.startsWith('sk-')){localStorage.setItem('fe_apikey',k.value);alert('✅ Clé API sauvegardée !');}
   else{alert('Clé invalide — elle doit commencer par sk-ant-...');}
 }
+
+function loadJsonKey(input){
+  const f=input.files[0];
+  if(!f)return;
+  const r=new FileReader();
+  r.onload=e=>{
+    try{
+      const j=JSON.parse(e.target.result);
+      if(!j.private_key||!j.client_email){alert('Fichier JSON invalide');return;}
+      localStorage.setItem('fe_sakey',j.private_key);
+      localStorage.setItem('fe_saemail',j.client_email);
+      document.getElementById('keyStatus').textContent='✅ Clé Google chargée : '+j.client_email;
+      document.getElementById('keyStatus').style.color='#2e7d32';
+    }catch(err){alert('Erreur lecture JSON : '+err.message);}
+  };
+  r.readAsText(f);
+}
+
+window.onload = () => {
+  const savedKey=localStorage.getItem('fe_apikey');
+  if(savedKey){const kf=document.getElementById('apikey');if(kf)kf.value=savedKey;}
+  const sakey=localStorage.getItem('fe_sakey');
+  const saemail=localStorage.getItem('fe_saemail');
+  if(sakey&&saemail){
+    const ks=document.getElementById('keyStatus');
+    if(ks){ks.textContent='✅ Clé Google chargée : '+saemail;ks.style.color='#2e7d32';}
+  }
+  if(hist.length){document.getElementById('hsec').style.display='block';showHist();}
+};
 
 function goStep(n){
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
@@ -344,9 +413,7 @@ async function loadFournisseurs(){
   try{
     const test=await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+'/values/A1',{headers:{Authorization:'Bearer '+tok}});
     const td=await test.json();
-    if(td.error&&td.error.code===401){
-      await new Promise(res=>tc.requestAccessToken({prompt:'',callback:r=>{if(!r.error)tok=r.access_token;res();}}));
-    }
+    if(td.error&&td.error.code===401){ await refreshTokIfNeeded(); }
     const r=await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+'/values/'+encodeURIComponent('📋 Fournisseurs!A4:C200'),{headers:{Authorization:'Bearer '+tok}});
     const d=await r.json();
     if(d.error||!d.values)return'';
