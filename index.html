@@ -759,7 +759,7 @@ function renderTiller(matches,tillerProds,sheetsProds,filterCat=''){
     h+=`<td style="text-align:center"><input type="checkbox" id="cb${i}" ${m.selected?'checked':''} onchange="window.matches_data[${i}].selected=this.checked"></td>`;
     h+=`<td style="font-size:.8rem;font-weight:500">${m.tiller.name}</td>`;
     h+=`<td style="font-size:.75rem;color:#666">${m.tiller.cat}</td>`;
-    h+=`<td style="font-size:.75rem;color:${noMatch?'#c62828':'var(--vert)';font-weight:600}">${m.sheets.fournisseur||'—'}</td>`;
+    h+=`<td style="font-size:.75rem;color:${noMatch?'#c62828':'var(--vert)'};font-weight:600">${m.sheets.fournisseur||'—'}</td>`;
     h+=`<td><div ${inpBox}><input ${inp} id="tc${i}" value="${m.sheets.code}"></div></td>`;
     h+=`<td><div ${inpBox}><input ${inp} id="td${i}" value="${m.sheets.nom}" style="min-width:150px;width:100%;background:transparent;border:none;font-size:.8rem;outline:none;padding:2px 4px"></div></td>`;
     h+=`<td style="text-align:right;font-size:.8rem;color:#666">${m.tiller.cost?m.tiller.cost+'€':'—'}</td>`;
